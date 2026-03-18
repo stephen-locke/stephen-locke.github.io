@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ECON 465 — Stephen L. Locke, Ph.D.</title>
+  <meta name="description" content="ECON 465 Regression & Econometrics — course materials, R tutorials, datasets, and videos." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<!-- ===== NAV ===== -->
+<nav id="site-nav" role="navigation" aria-label="Main navigation">
+  <div class="nav-inner">
+    <a class="nav-logo" href="index.html">Stephen&nbsp;<span>Locke</span></a>
+    <button class="nav-toggle" aria-label="Toggle menu" onclick="document.querySelector('.nav-links').classList.toggle('open')">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="index.html#research">Research</a></li>
+      <li><a href="index.html#teaching" class="active">Teaching</a></li>
+      <li><a href="index.html#contact">Contact</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- ===== PAGE HERO ===== -->
+<div class="page-hero">
+  <div class="page-hero-inner">
+    <div class="breadcrumb">
+      <a href="index.html">Home</a> &rsaquo; <a href="index.html#teaching">Teaching</a> &rsaquo; ECON 465
+    </div>
+    <h1>ECON 465</h1>
+    <p>Regression &amp; Econometrics &mdash; Western Kentucky University</p>
+  </div>
+</div>
+
+<!-- ===== CONTENT ===== -->
+<div class="page-content">
+  <div class="two-col">
+
+    <!-- Sidebar -->
+    <aside>
+      <div class="sidebar-card">
+        <h3>Quick Links</h3>
+        <ul class="sidebar-list">
+          <li>
+            <a href="#tutorials">
+              <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              R Tutorials
+            </a>
+          </li>
+          <li>
+            <a href="#datasets">
+              <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+              Datasets
+            </a>
+          </li>
+          <li>
+            <a href="#videos">
+              <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+              Videos
+            </a>
+          </li>
+          <li>
+            <a href="#setup">
+              <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M19.07 19.07l-1.41-1.41M4.93 19.07l1.41-1.41M12 2v2M12 20v2M2 12h2M20 12h2"/></svg>
+              Software Setup
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="sidebar-card" style="margin-top:1.25rem;">
+        <h3>Other Courses</h3>
+        <ul class="sidebar-list">
+          <li><a href="econ307.html">ECON 307 — Financial Data Modeling</a></li>
+          <li><a href="index.html#teaching">All Teaching</a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-card" style="margin-top:1.25rem;">
+        <h3>Topics Covered</h3>
+        <ul class="sidebar-list" style="font-size:.82rem;">
+          <li><span style="color:#6b7280;">Regression Estimation</span></li>
+          <li><span style="color:#6b7280;">OLS Assumptions &amp; Violations</span></li>
+          <li><span style="color:#6b7280;">Dummy Variables</span></li>
+          <li><span style="color:#6b7280;">Panel Data</span></li>
+          <li><span style="color:#6b7280;">Diff-in-Diff</span></li>
+          <li><span style="color:#6b7280;">Logit / Probit</span></li>
+          <li><span style="color:#6b7280;">Instrumental Variables</span></li>
+        </ul>
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <main>
+
+      <div class="notice-box">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <div>R Studio requires R to be installed before it will work. See the <a href="#setup">Software Setup</a> section below for download links.</div>
+      </div>
+
+      <!-- Tutorials -->
+      <div class="content-card" id="tutorials">
+        <h2>
+          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          R Tutorials
+        </h2>
+        <ol class="tutorial-list">
+          <li><a href="R_Tutorials/Introduction_to_R.html">Introduction to R</a></li>
+          <li><a href="R_Tutorials/Interpreting-Regression-Output.html">Regression Estimation &amp; Interpretation</a></li>
+          <li><a href="R_Tutorials/Evaluating-a-Regression.html">Regression Evaluation &amp; Diagnostics</a></li>
+          <li><a href="R_Tutorials/Tidyverse.html">Data Cleaning &amp; Organization</a></li>
+          <li><a href="R_Tutorials/OLS-Assumptions.html">OLS Assumptions &amp; Violations</a></li>
+          <li><a href="R_Tutorials/Dummy-Variables.html">Dummy Variables &amp; Categorical Predictors</a></li>
+          <li><a href="R_Tutorials/Modeling.html">Model Specification &amp; Selection</a></li>
+          <li><a href="R_Tutorials/Panel-Data.html">Panel Data Analysis</a></li>
+          <li><a href="R_Tutorials/Difference-in-Differences.html">Difference-in-Differences Estimation</a></li>
+          <li><a href="R_Tutorials/Discrete-Dependent-Variables.html">Discrete Dependent Variables (Logit / Probit)</a></li>
+          <li><a href="R_Tutorials/Multinomial-Conditional-Ordered.html">Ordered, Multinomial &amp; Conditional Logit</a></li>
+          <li><a href="R_Tutorials/Instrumental-Variables.html">Instrumental Variables</a></li>
+        </ol>
+      </div>
+
+      <!-- Datasets -->
+      <div class="content-card" id="datasets">
+        <h2>
+          <svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+          Datasets
+        </h2>
+        <p style="font-size:.875rem;color:#6b7280;margin-bottom:1.25rem;">Excel files used for hands-on econometric analysis throughout the course.</p>
+        <div class="dataset-grid">
+          <div class="dataset-item">
+            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Real Estate
+          </div>
+          <div class="dataset-item">
+            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Wage Records
+          </div>
+          <div class="dataset-item">
+            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Loan Applications
+          </div>
+          <div class="dataset-item">
+            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Health Surveys
+          </div>
+          <div class="dataset-item">
+            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Labor Force Participation
+          </div>
+        </div>
+      </div>
+
+      <!-- Videos -->
+      <div class="content-card" id="videos">
+        <h2>
+          <svg viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+          Instructional Videos
+        </h2>
+        <ul class="tutorial-list">
+          <li>
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="#b5112c" fill="none" stroke-width="2" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+            <span>Saving a Script and Setting the Working Directory</span>
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="#b5112c" fill="none" stroke-width="2" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+            <span>Installing/Loading Packages, Loading Data, Summary Statistics, Plots, and Regression</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- R Markdown -->
+      <div class="content-card">
+        <h2>
+          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          R Markdown
+        </h2>
+        <p style="font-size:.875rem;color:#374151;">
+          R Markdown documentation is provided for reproducible research and professional report writing. This tool integrates your analysis code, output, and narrative into a single document. Learn more <a href = "https://rmarkdown.rstudio.com/">here</a>.
+        </p>
+      </div>
+
+      <!-- Setup -->
+      <div class="content-card" id="setup">
+        <h2>
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M19.07 19.07l-1.41-1.41M4.93 19.07l1.41-1.41M12 2v2M12 20v2M2 12h2M20 12h2"/></svg>
+          Software Setup
+        </h2>
+        <p style="font-size:.875rem;color:#374151;margin-bottom:1rem;">
+          Install both R and RStudio in order. R must be installed <em>before</em> RStudio.
+        </p>
+        <div style="display:flex;gap:.75rem;flex-wrap:wrap;">
+          <a href="https://cran.r-project.org/" target="_blank" rel="noopener" class="btn btn-primary" style="font-size:.85rem;">
+            Download R
+          </a>
+          <a href="https://posit.co/download/rstudio-desktop/" target="_blank" rel="noopener" class="btn btn-outline" style="font-size:.85rem;border-color:#d1d5db;color:#374151;">
+            Download RStudio
+          </a>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <p>
+    &copy; <span id="yr"></span> Stephen L. Locke, Ph.D. &nbsp;&middot;&nbsp;
+    <a href="index.html">Home</a> &nbsp;&middot;&nbsp;
+    <a href="index.html#contact">Contact</a>
+  </p>
+</footer>
+
+<script>
+  document.getElementById('yr').textContent = new Date().getFullYear();
+  document.querySelectorAll('.nav-links a').forEach(a => {
+    a.addEventListener('click', () => document.querySelector('.nav-links').classList.remove('open'));
+  });
+</script>
+</body>
+</html>
