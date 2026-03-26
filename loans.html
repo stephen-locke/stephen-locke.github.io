@@ -1,0 +1,1463 @@
+<!--Stephen Locke-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Government & Conventional Loan Requirements</title>
+  <style>
+    :root {
+      --primary: #1a3a5c;
+      --accent: #2e7d9f;
+      --accent-light: #4aa8cc;
+      --bg: #f4f6f9;
+      --card: #ffffff;
+      --border: #dde3ea;
+      --text: #2c3e50;
+      --text-light: #6c7a8a;
+      --success: #27ae60;
+      --warning: #e67e22;
+      --danger: #e74c3c;
+      --fha: #2980b9;
+      --va: #27ae60;
+      --usda: #8e44ad;
+      --sec184: #c0392b;
+      --conv: #e67e22;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* HEADER */
+    header {
+      background: var(--primary);
+      color: white;
+      padding: 28px 40px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    header h1 { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.5px; }
+    header p { margin-top: 6px; color: #a8c4d8; font-size: 0.95rem; }
+
+    /* NAV TABS */
+    .tab-nav {
+      display: flex;
+      gap: 0;
+      background: var(--primary);
+      padding: 0 40px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      overflow-x: auto;
+    }
+    .tab-btn {
+      padding: 14px 22px;
+      border: none;
+      background: transparent;
+      color: #a8c4d8;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 600;
+      border-bottom: 3px solid transparent;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .tab-btn:hover { color: white; background: rgba(255,255,255,0.05); }
+    .tab-btn.active { color: white; border-bottom-color: var(--accent-light); }
+    .tab-btn.fha.active    { border-bottom-color: #5dade2; }
+    .tab-btn.va.active     { border-bottom-color: #58d68d; }
+    .tab-btn.usda.active   { border-bottom-color: #bb8fce; }
+    .tab-btn.sec184.active { border-bottom-color: #f1948a; }
+    .tab-btn.conv.active   { border-bottom-color: #f0b27a; }
+
+    /* MAIN CONTENT */
+    main { padding: 32px 40px; max-width: 1200px; margin: 0 auto; }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* LOAN HEADER BANNER */
+    .loan-banner {
+      border-radius: 12px;
+      padding: 24px 28px;
+      margin-bottom: 28px;
+      color: white;
+      display: flex;
+      align-items: flex-start;
+      gap: 20px;
+    }
+    .loan-banner.fha    { background: linear-gradient(135deg, #1a6fa8, #2980b9); }
+    .loan-banner.va     { background: linear-gradient(135deg, #1a7a4a, #27ae60); }
+    .loan-banner.usda   { background: linear-gradient(135deg, #6c3483, #8e44ad); }
+    .loan-banner.sec184 { background: linear-gradient(135deg, #a93226, #c0392b); }
+    .loan-banner.conv   { background: linear-gradient(135deg, #b7490e, #e67e22); }
+
+    .loan-banner-icon { font-size: 2.5rem; }
+    .loan-banner-text h2 { font-size: 1.5rem; margin-bottom: 6px; }
+    .loan-banner-text p { opacity: 0.9; font-size: 0.95rem; line-height: 1.5; }
+
+    /* QUICK STATS ROW */
+    .quick-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px 18px;
+      text-align: center;
+    }
+    .stat-card .stat-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-light);
+      margin-bottom: 6px;
+    }
+    .stat-card .stat-value {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    /* SECTION CARDS */
+    .section-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 20px;
+      margin-bottom: 28px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .card-header {
+      padding: 14px 20px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid var(--border);
+      background: #f8fafc;
+    }
+    .card-header .icon { font-size: 1.1rem; }
+    .card-body { padding: 18px 20px; }
+
+    /* REQUIREMENT ITEMS */
+    .req-list { list-style: none; }
+    .req-list li {
+      padding: 7px 0;
+      border-bottom: 1px solid #f0f2f4;
+      font-size: 0.88rem;
+      line-height: 1.5;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .req-list li:last-child { border-bottom: none; }
+    .req-list li::before {
+      content: "•";
+      color: var(--accent);
+      font-weight: bold;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    strong { font-weight: 600; }
+
+    /* REPAIR TABLE */
+    .repair-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.87rem;
+    }
+    .repair-table th {
+      text-align: left;
+      padding: 9px 12px;
+      background: #f0f4f8;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-light);
+      border-bottom: 1px solid var(--border);
+    }
+    .repair-table td {
+      padding: 9px 12px;
+      border-bottom: 1px solid #f0f2f4;
+      vertical-align: top;
+    }
+    .repair-table tr:last-child td { border-bottom: none; }
+    .badge {
+      display: inline-block;
+      padding: 3px 9px;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .badge.yes  { background: #fdecea; color: #c0392b; }
+    .badge.no   { background: #eafaf1; color: #1e8449; }
+    .badge.cond { background: #fef9e7; color: #b7770d; }
+
+    /* COMPARISON TABLE */
+    .compare-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+    .compare-table th {
+      padding: 11px 14px;
+      text-align: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      border-bottom: 2px solid var(--border);
+      white-space: nowrap;
+    }
+    .compare-table th:first-child { text-align: left; }
+    .compare-table td {
+      padding: 9px 14px;
+      border-bottom: 1px solid #f0f2f4;
+      text-align: center;
+      vertical-align: middle;
+    }
+    .compare-table td:first-child { text-align: left; font-weight: 500; }
+    .compare-table tr:last-child td { border-bottom: none; }
+    .compare-table tr:hover td { background: #f8fafc; }
+    .th-fha    { background: #ebf5fb; color: #1a6fa8; }
+    .th-va     { background: #eafaf1; color: #1a7a4a; }
+    .th-usda   { background: #f5eef8; color: #6c3483; }
+    .th-sec184 { background: #fdedec; color: #a93226; }
+    .th-conv   { background: #fef5e7; color: #b7490e; }
+
+    /* ACCORDION */
+    .accordion { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+    .accordion-item { border-bottom: 1px solid var(--border); }
+    .accordion-item:last-child { border-bottom: none; }
+    .accordion-btn {
+      width: 100%;
+      padding: 14px 20px;
+      background: var(--card);
+      border: none;
+      cursor: pointer;
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.92rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background 0.15s;
+    }
+    .accordion-btn:hover { background: #f8fafc; }
+    .accordion-btn .arrow { transition: transform 0.2s; font-size: 0.8rem; color: var(--text-light); }
+    .accordion-btn.open .arrow { transform: rotate(180deg); }
+    .accordion-body {
+      display: none;
+      padding: 0 20px 18px;
+      font-size: 0.88rem;
+      line-height: 1.6;
+      background: var(--card);
+    }
+    .accordion-body.open { display: block; }
+
+    /* HIGHLIGHT BOX */
+    .highlight-box {
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin-top: 8px;
+      font-size: 0.88rem;
+      line-height: 1.6;
+      border-left: 4px solid;
+    }
+    .highlight-box.info  { background: #ebf5fb; border-color: #2980b9; color: #1a5276; }
+    .highlight-box.warn  { background: #fef9e7; border-color: #e67e22; color: #7d4b0a; }
+    .highlight-box.note  { background: #eafaf1; border-color: #27ae60; color: #1a5c34; }
+    .highlight-box strong { display: block; margin-bottom: 4px; }
+
+    /* OVERVIEW GRID */
+    .overview-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+    .overview-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+      border-top: 4px solid;
+    }
+    .overview-card:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
+    .overview-card.fha    { border-top-color: var(--fha); }
+    .overview-card.va     { border-top-color: var(--va); }
+    .overview-card.usda   { border-top-color: var(--usda); }
+    .overview-card.sec184 { border-top-color: var(--sec184); }
+    .overview-card.conv   { border-top-color: var(--conv); }
+    .overview-card h3 { font-size: 1rem; margin-bottom: 8px; }
+    .overview-card p  { font-size: 0.82rem; color: var(--text-light); line-height: 1.5; }
+    .overview-card .oc-tag {
+      display: inline-block;
+      margin-top: 10px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+    .overview-card.fha    .oc-tag { background: #ebf5fb; color: var(--fha); }
+    .overview-card.va     .oc-tag { background: #eafaf1; color: var(--va); }
+    .overview-card.usda   .oc-tag { background: #f5eef8; color: var(--usda); }
+    .overview-card.sec184 .oc-tag { background: #fdedec; color: var(--sec184); }
+    .overview-card.conv   .oc-tag { background: #fef5e7; color: var(--conv); }
+
+    /* FOOTER */
+    .page-footer {
+      text-align: center;
+      padding: 24px;
+      color: var(--text-light);
+      font-size: 0.8rem;
+      border-top: 1px solid var(--border);
+      margin-top: 40px;
+    }
+
+    /* RESOURCE LINKS */
+    .resource-links { list-style: none; }
+    .resource-links li {
+      border-bottom: 1px solid #f0f2f4;
+    }
+    .resource-links li:last-child { border-bottom: none; }
+    .resource-links a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 0;
+      font-size: 0.87rem;
+      color: var(--accent);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .resource-links a:hover { color: var(--primary); text-decoration: underline; }
+    .resource-links .res-icon { font-size: 1rem; flex-shrink: 0; }
+    .resource-links .res-label { font-weight: 600; }
+    .resource-links .res-desc { color: var(--text-light); font-size: 0.8rem; margin-top: 1px; }
+    .resource-links .res-text { display: flex; flex-direction: column; }
+
+    @media (max-width: 600px) {
+      header, .tab-nav, main { padding-left: 16px; padding-right: 16px; }
+      .section-grid { grid-template-columns: 1fr; }
+      .overview-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Loan Requirements &amp; Appraisal Standards</h1>
+  <p>Government &amp; Conventional Home Loan Programs — Eligibility, Appraisal, and Inspection Requirements</p>
+</header>
+
+<nav class="tab-nav">
+  <button class="tab-btn active" onclick="showTab('overview')">Overview</button>
+  <button class="tab-btn fha"    onclick="showTab('fha')">FHA</button>
+  <button class="tab-btn va"     onclick="showTab('va')">VA</button>
+  <button class="tab-btn usda"   onclick="showTab('usda')">USDA</button>
+  <button class="tab-btn sec184" onclick="showTab('sec184')">Section 184</button>
+  <button class="tab-btn conv"   onclick="showTab('conv')">Conventional</button>
+  <button class="tab-btn"        onclick="showTab('compare')">Compare All</button>
+</nav>
+
+<main>
+
+  <!-- ===================== OVERVIEW ===================== -->
+  <div id="tab-overview" class="tab-panel active">
+    <div class="overview-grid">
+      <div class="overview-card fha" onclick="showTab('fha')">
+        <h3>FHA Loan</h3>
+        <p>Federal Housing Administration. Low down payment, flexible credit. Strict health &amp; safety standards.</p>
+        <span class="oc-tag">3.5% Down · Anyone Eligible</span>
+      </div>
+      <div class="overview-card va" onclick="showTab('va')">
+        <h3>VA Loan</h3>
+        <p>Department of Veterans Affairs. Zero down, no PMI. Best terms available for eligible military/veterans.</p>
+        <span class="oc-tag">0% Down · Military/Veterans</span>
+      </div>
+      <div class="overview-card usda" onclick="showTab('usda')">
+        <h3>USDA Loan</h3>
+        <p>Rural Development program. Zero down for eligible rural areas with income limits. Modesty standards apply.</p>
+        <span class="oc-tag">0% Down · Rural + Income Limits</span>
+      </div>
+      <div class="overview-card sec184" onclick="showTab('sec184')">
+        <h3>Section 184</h3>
+        <p>HUD Native American Home Loan. Trust land eligible. Unique title/leasehold considerations.</p>
+        <span class="oc-tag">Low Down · Native American</span>
+      </div>
+      <div class="overview-card conv" onclick="showTab('conv')">
+        <h3>Conventional</h3>
+        <p>Fannie Mae / Freddie Mac or portfolio lenders. Flexible standards, appraisal waiver options available.</p>
+        <span class="oc-tag">3–20% Down · Anyone Eligible</span>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:24px;">
+      <div class="card-header"><span class="icon">📊</span> Quick Comparison: Key Loan Features</div>
+      <div class="card-body" style="overflow-x:auto;">
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th style="text-align:left;">Feature</th>
+              <th class="th-fha">FHA</th>
+              <th class="th-va">VA</th>
+              <th class="th-usda">USDA</th>
+              <th class="th-sec184">Sec. 184</th>
+              <th class="th-conv">Conventional</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Min. Down Payment</td><td>3.5%</td><td>0%</td><td>0%</td><td>1.25–2.25%</td><td>3–20%</td></tr>
+            <tr><td>Mortgage Insurance</td><td>MIP required</td><td>No PMI</td><td>Low fee</td><td>No PMI</td><td>PMI if &lt;20% down</td></tr>
+            <tr><td>Min. Credit Score</td><td>500 (580 for 3.5%)</td><td>~620 (lender)</td><td>640+</td><td>Flexible</td><td>620+ typical</td></tr>
+            <tr><td>Eligibility</td><td>Anyone</td><td>Military/Veterans</td><td>Rural + income</td><td>Native American</td><td>Anyone</td></tr>
+            <tr><td>Location Restriction</td><td>None</td><td>None</td><td>Rural only</td><td>None</td><td>None</td></tr>
+            <tr><td>Appraisal Standard</td><td>HUD 4000.1</td><td>VA Pam. 26-7</td><td>HUD 4000.1</td><td>HUD 4000.1</td><td>Fannie/Freddie Guide</td></tr>
+            <tr><td>Mandatory Repairs</td><td>Frequent</td><td>Frequent</td><td>Frequent</td><td>Frequent</td><td>Rare</td></tr>
+            <tr><td>Home Inspection Required</td><td>No</td><td>No</td><td>No</td><td>No</td><td>No</td></tr>
+            <tr><td>Appraisal Waiver</td><td>No</td><td>No</td><td>No</td><td>No</td><td>Yes (DU/LPA eligible)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="highlight-box info">
+      <strong>How to Use This Tool</strong>
+      Click any loan type in the navigation above or on the cards to explore detailed requirements, appraisal standards, required repairs, and key distinctions for each program.
+    </div>
+  </div>
+
+  <!-- ===================== FHA ===================== -->
+  <div id="tab-fha" class="tab-panel">
+    <div class="loan-banner fha">
+      <div class="loan-banner-icon">🏠</div>
+      <div class="loan-banner-text">
+        <h2>FHA Loan — Federal Housing Administration</h2>
+        <p>Backed by HUD. Low down payment and flexible credit requirements make this the most common first-time buyer program. Appraisals follow <strong>HUD Handbook 4000.1</strong> and must confirm both market value and compliance with Minimum Property Standards (MPS).</p>
+      </div>
+    </div>
+
+    <div class="quick-stats">
+      <div class="stat-card"><div class="stat-label">Min. Down Payment</div><div class="stat-value">3.5%</div></div>
+      <div class="stat-card"><div class="stat-label">Min. Credit Score</div><div class="stat-value">580</div></div>
+      <div class="stat-card"><div class="stat-label">Upfront MIP</div><div class="stat-value">1.75%</div></div>
+      <div class="stat-card"><div class="stat-label">Appraisal Standard</div><div class="stat-value">HUD 4000.1</div></div>
+      <div class="stat-card"><div class="stat-label">Appraisal Waiver</div><div class="stat-value">No</div></div>
+    </div>
+
+    <div class="section-grid">
+      <div class="card">
+        <div class="card-header"><span class="icon">🔑</span> Core Appraisal Principles</div>
+        <div class="card-body">
+          <ul class="req-list">
+            <li>Dual purpose: establishes <strong>market value</strong> AND confirms <strong>HUD Minimum Property Standards</strong></li>
+            <li>Property must be <strong>Safe</strong> — protects occupant health and safety</li>
+            <li>Property must be <strong>Sound</strong> — structurally sound and in good repair</li>
+            <li>Property must be <strong>Secure</strong> — protects the lender's collateral</li>
+            <li>Must be appraised by an <strong>FHA-approved appraiser</strong></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="icon">🏗️</span> Roof &amp; Structure</div>
+        <div class="card-body">
+          <ul class="req-list">
+            <li>Roof must have <strong>2+ years of remaining life</strong> (appraiser estimates)</li>
+            <li>No missing or damaged shingles allowing moisture intrusion</li>
+            <li>Foundation must be structurally sound with no major cracks</li>
+            <li>Crawl spaces must be accessible and adequately ventilated</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="icon">⚠️</span> Safety Hazards</div>
+        <div class="card-body">
+          <ul class="req-list">
+            <li>No exposed or frayed wiring or unsafe electrical panels</li>
+            <li>Working smoke detectors on every level</li>
+            <li>No chipping or peeling paint (lead paint risk — especially pre-1978 homes)</li>
+            <li>Handrails required on all stairs with 3 or more steps</li>
+            <li>No trip hazards or broken flooring</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="icon">💧</span> Water &amp; Plumbing</div>
+        <div class="card-body">
+          <ul class="req-list">
+            <li>Hot and cold running water in all bathrooms and kitchen</li>
+            <li>Water heater must meet local codes and be properly strapped in seismic areas</li>
+            <li>No evidence of active leaks</li>
+            <li>Private wells require water quality testing</li>
+            <li>Septic systems must be functional; inspection often required</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="icon">🌡️</span> Heating &amp; Mechanical</div>
+        <div class="card-body">
+          <ul class="req-list">
+            <li>Adequate heat in all rooms — minimum 50°F in living areas</li>
+            <li>If central A/C exists, it must be functional</li>
+            <li>No unvented fuel-burning heaters as primary heat source</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="icon">🚪</span> Interior Conditions</div>
+        <div class="card-body">
+          <ul class="req-list">
+            <li>No dampness, water damage, or evidence of mold</li>
+            <li>All rooms must have adequate egress (windows/doors for emergency exit)</li>
+            <li>Bedrooms must have windows that open</li>
+            <li>No major pest or termite damage; WDO inspection may be required</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="icon">🏡</span> Exterior &amp; Site</div>
+        <div class="card-body">
+          <ul class="req-list">
+            <li>No standing water pooling near the foundation</li>
+            <li>Driveway/access must be passable year-round</li>
+            <li>No encroachments or easement issues that affect use</li>
+            <li>Well and septic must be adequate distance apart — typically 50–100 ft</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="icon">🔧</span> Required Repairs vs. Cosmetic</div>
+        <div class="card-body" style="overflow-x:auto;">
+          <table class="repair-table">
+            <thead><tr><th>Condition</th><th>Repair Required?</th></tr></thead>
+            <tbody>
+              <tr><td>Peeling paint (pre-1978)</td><td><span class="badge yes">Yes</span></td></tr>
+              <tr><td>Broken window</td><td><span class="badge yes">Yes</span></td></tr>
+              <tr><td>Missing handrail</td><td><span class="badge yes">Yes</span></td></tr>
+              <tr><td>Active roof leak</td><td><span class="badge yes">Yes</span></td></tr>
+              <tr><td>Exposed wiring</td><td><span class="badge yes">Yes</span></td></tr>
+              <tr><td>Dated kitchen/bath (functional)</td><td><span class="badge no">No</span></td></tr>
+              <tr><td>Old but functional roof</td><td><span class="badge no">No</span></td></tr>
+              <tr><td>Minor drywall cracks</td><td><span class="badge no">No</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="highlight-box info">
+      <strong>FHA Appraisal vs. Home Inspection</strong>
+      An FHA appraisal is NOT a substitute for a home inspection. It catches major deficiencies but does not evaluate HVAC systems, plumbing depth, or electrical capacity in detail. A separate home inspection is strongly recommended for the buyer's protection.
+    </div>
+
+    <div class="card" style="margin-top:20px;">
+      <div class="card-header"><span class="icon">🔗</span> Official FHA Resources</div>
+      <div class="card-body">
+        <ul class="resource-links">
+          <li><a href="https://www.hud.gov/fha" target="_blank" rel="noopener">
+            <span class="res-icon">🏛️</span>
+            <span class="res-text"><span class="res-label">HUD FHA Overview</span><span class="res-desc">hud.gov — FHA loan program overview and borrower information</span></span>
+          </a></li>
+          <li><a href="https://www.hud.gov/hud-partners/single-family-handbook-4000-1" target="_blank" rel="noopener">
+            <span class="res-icon">📖</span>
+            <span class="res-text"><span class="res-label">HUD Handbook 4000.1 — Single Family Housing Policy Handbook</span><span class="res-desc">hud.gov — Official appraisal and underwriting standards (Minimum Property Standards)</span></span>
+          </a></li>
+          <li><a href="https://entp.hud.gov/idapp/html/apprlook.cfm" target="_blank" rel="noopener">
+            <span class="res-icon">🔍</span>
+            <span class="res-text"><span class="res-label">FHA Appraiser Roster Search</span><span class="res-desc">hud.gov — Search for HUD-approved FHA appraisers by state</span></span>
+          </a></li>
+          <li><a href="https://www.consumerfinance.gov/buy-a-house/" target="_blank" rel="noopener">
+            <span class="res-icon">📋</span>
+            <span class="res-text"><span class="res-label">CFPB — Buying a House Guide</span><span class="res-desc">consumerfinance.gov — Consumer guide to loan types and homebuying steps</span></span>
+          </a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== VA ===================== -->
+  <div id="tab-va" class="tab-panel">
+    <div class="loan-banner va">
+      <div class="loan-banner-icon">🎖️</div>
+      <div class="loan-banner-text">
+        <h2>VA Loan — Department of Veterans Affairs</h2>
+        <p>Available to active duty, veterans, and surviving spouses. Zero down, no PMI, generally the best terms available. Appraisals follow <strong>VA Pamphlet 26-7</strong> and must be conducted by a VA-certified appraiser confirming Minimum Property Requirements (MPRs).</p>
+      </div>
+    </div>
+
+    <div class="quick-stats">
+      <div class="stat-card"><div class="stat-label">Min. Down Payment</div><div class="stat-value">0%</div></div>
+      <div class="stat-card"><div class="stat-label">PMI Required</div><div class="stat-value">No</div></div>
+      <div class="stat-card"><div class="stat-label">Funding Fee</div><div class="stat-value">Varies</div></div>
+      <div class="stat-card"><div class="stat-label">Appraisal Standard</div><div class="stat-value">VA Pam. 26-7</div></div>
+      <div class="stat-card"><div class="stat-label">Termite Inspection</div><div class="stat-value">Most States</div></div>
+    </div>
+
+    <div class="section-grid">
+      <div class="card">
+        <div class="card-header"><span class="icon">🔑</span> Core MPR Principles</div>
+        <div class="card-body">
+          <ul class="req-list">
+            <li>Must be appraised by a <strong>VA-certified appraiser only</strong></li>
+            <li>Property must be <strong>Safe</strong> — protects health and safety of occupants</li>
+            <li>Property must be <strong>Structurally Sound</strong> — no deferred maintenance threatening integrity</li>
+            <li>Property must be <strong>Sanitary</strong> — adequate sanitation and water/sewage systems</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="icon">🏗️</span> Roof &amp; Structure</div>
+        <div class="card-body">
+          <ul class="req-list">
+            <li>Roof must be in good condition with <strong>reasonable future utility</strong></li>
+            <li>Maximum <strong>2 layers of roofing</strong> — must replace if exceeded</li>
+            <li>Flat roofs subject to additional scrutiny</li>
+            <li>No significant settlement, excessive cracks, or deterioration in foundation</li>
+            <li>Crawl spaces must have adequate ventilation and be free of standing water</li>
+            <li>Basement must be dry and properly drained</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="icon">📐</span> Space &amp; Access</div>
+        <div class="card-body">
+          <ul class="req-list">
+            <li>Sufficient space for <strong>living, sleeping, cooking, and sanitation</strong></li>
+            <li>Continuous, <strong>all-weather road access</strong> required</li>
+            <li>Access to each unit must not pass through another unit (multi-unit)</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="icon">🌡️</span> Mechanical Systems</div>
+        <div class="card-body">
+          <ul class="req-list">
+            <li>Heating must be <strong>adequate for the climate</strong> and safe</li>
+            <li>Wood-burning stoves <strong>alone are not acceptable</strong> as sole heat source</li>
+            <li>Plumbing must be functional with hot and cold water</li>
+            <li>Electrical must have adequate capacity with no exposed wiring</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="icon">💧</span> Water &amp; Sewage</div>
+        <div class="card-body">
+          <ul class="req-list">
+            <li>Private wells must meet local authority standards; <strong>water test required</strong></li>
+            <li>Septic systems must be functional and not posing health risk</li>
+            <li>Distance requirements between well and septic must meet local codes</li>
+            <li>No cross-connections between potable and non-potable water</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="icon">🌍</span> Site &amp; Location Hazards</div>
+        <div class="card-body">
+          <ul class="req-list">
+            <li>No high-voltage power lines or transmission towers nearby</li>
+            <li>No oil or gas wells on the property</li>
+            <li>No sinkholes or unstable soil</li>
+            <li>Flood zone properties require flood insurance (not an automatic disqualifier)</li>
+            <li>Proximity to airport noise zones must be disclosed</li>
+            <li>Excessive noise from highways, airports, or industrial sites is evaluated</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="icon">🪲</span> Termite &amp; Pest</div>
+        <div class="card-body">
+          <ul class="req-list">
+            <li>Termite inspection (WDIR) <strong>required in most states</strong></li>
+            <li>VA designates which states require mandatory inspections</li>
+            <li>Active infestation or structural damage must be treated and repaired before closing</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="icon">🔧</span> Required Repairs vs. Cosmetic</div>
+        <div class="card-body" style="overflow-x:auto;">
+          <table class="repair-table">
+            <thead><tr><th>Condition</th><th>Repair Required?</th></tr></thead>
+            <tbody>
+              <tr><td>Peeling paint (pre-1978)</td><td><span class="badge yes">Yes</span></td></tr>
+              <tr><td>Active termite infestation</td><td><span class="badge yes">Yes</span></td></tr>
+              <tr><td>Inadequate heating system</td><td><span class="badge yes">Yes</span></td></tr>
+              <tr><td>Missing handrails</td><td><span class="badge yes">Yes</span></td></tr>
+              <tr><td>Wood-burning stove as sole heat</td><td><span class="badge yes">Yes</span></td></tr>
+              <tr><td>More than 2 roof layers</td><td><span class="badge yes">Yes</span></td></tr>
+              <tr><td>Functioning but old appliances</td><td><span class="badge no">No</span></td></tr>
+              <tr><td>Cosmetic wear and tear</td><td><span class="badge no">No</span></td></tr>
+              <tr><td>Old but serviceable roof</td><td><span class="badge no">No</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="accordion" style="margin-bottom:20px;">
+      <div class="accordion-item">
+        <button class="accordion-btn" onclick="toggleAccordion(this)">
+          VA Tidewater Initiative <span class="arrow">▼</span>
+        </button>
+        <div class="accordion-body">
+          <p>A unique VA process triggered when the appraiser believes the <strong>sale price may exceed market value</strong>:</p>
+          <ul class="req-list" style="margin-top:10px;">
+            <li>Appraiser issues a <strong>Tidewater notice</strong> before completing the appraisal</li>
+            <li>Lender/agent has <strong>48 hours</strong> to submit comparable sales data</li>
+            <li>Appraiser considers the data before finalizing value</li>
+            <li>If value still comes in low, buyer/seller must renegotiate — VA prohibits financing above appraised value</li>
+          </ul>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <button class="accordion-btn" onclick="toggleAccordion(this)">
+          VA Reconsideration of Value (ROV) <span class="arrow">▼</span>
+        </button>
+        <div class="accordion-body">
+          <p>If the appraisal comes in low, the buyer or lender can formally request a <strong>Reconsideration of Value</strong>:</p>
+          <ul class="req-list" style="margin-top:10px;">
+            <li>Must provide new or better comparable sales to support a higher value</li>
+            <li>Original appraiser reviews and may revise the value</li>
+            <li>A second appraisal can be requested but is rarely granted</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="highlight-box note">
+      <strong>VA vs. FHA: Key Distinction</strong>
+      VA appraisals tend to be stricter than FHA in certain areas — termite requirements, road access, noise/hazard evaluation, and roof layering limits — reflecting the VA's commitment to protecting veteran buyers from substandard properties.
+    </div>
+
+    <div class="card" style="margin-top:20px;">
+      <div class="card-header"><span class="icon">🔗</span> Official VA Resources</div>
+      <div class="card-body">
+        <ul class="resource-links">
+          <li><a href="https://www.va.gov/housing-assistance/home-loans/" target="_blank" rel="noopener">
+            <span class="res-icon">🏛️</span>
+            <span class="res-text"><span class="res-label">VA Home Loans — VA.gov</span><span class="res-desc">va.gov — Main VA home loan program page including eligibility and benefits</span></span>
+          </a></li>
+          <li><a href="https://benefits.va.gov/warms/pam26_7.asp" target="_blank" rel="noopener">
+            <span class="res-icon">📖</span>
+            <span class="res-text"><span class="res-label">VA Lenders Handbook — Pamphlet 26-7</span><span class="res-desc">benefits.va.gov — Official VA appraisal and underwriting guidelines (MPRs)</span></span>
+          </a></li>
+          <li><a href="https://benefits.va.gov/WARMS/docs/admin26/m26-07/Ch12_Minimum_Property_Requirement_NEW.pdf" target="_blank" rel="noopener">
+            <span class="res-icon">📄</span>
+            <span class="res-text"><span class="res-label">VA Pamphlet 26-7, Chapter 12 — Minimum Property Requirements</span><span class="res-desc">benefits.va.gov — Detailed MPR standards for VA appraisals (PDF)</span></span>
+          </a></li>
+          <li><a href="https://benefits.va.gov/WARMS/docs/admin26/m26-07/Chapter_10.pdf" target="_blank" rel="noopener">
+            <span class="res-icon">📄</span>
+            <span class="res-text"><span class="res-label">VA Pamphlet 26-7, Chapter 10 — The Appraisal Process</span><span class="res-desc">benefits.va.gov — VA appraisal process including Tidewater Initiative (PDF)</span></span>
+          </a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== USDA ===================== -->
+  <div id="tab-usda" class="tab-panel">
+    <div class="loan-banner usda">
+      <div class="loan-banner-icon">🌾</div>
+      <div class="loan-banner-text">
+        <h2>USDA Loan — U.S. Department of Agriculture</h2>
+        <p>Rural Development program with zero down payment for eligible rural areas. Follows <strong>HUD Handbook 4000.1</strong> (same as FHA), but adds its own eligibility and <strong>modesty overlays</strong>. Location and property type eligibility are as important as condition.</p>
+      </div>
+    </div>
+
+    <div class="quick-stats">
+      <div class="stat-card"><div class="stat-label">Min. Down Payment</div><div class="stat-value">0%</div></div>
+      <div class="stat-card"><div class="stat-label">Guarantee Fee</div><div class="stat-value">1% Upfront</div></div>
+      <div class="stat-card"><div class="stat-label">Annual Fee</div><div class="stat-value">0.35%</div></div>
+      <div class="stat-card"><div class="stat-label">Location</div><div class="stat-value">Rural Only</div></div>
+      <div class="stat-card"><div class="stat-label">Income Limit</div><div class="stat-value">115% AMI</div></div>
+    </div>
+
+    <div class="section-grid">
+      <div class="card">
+        <div class="card-header"><span class="icon">📍</span> Property Eligibility (USDA Unique)</div>
+        <div class="card-body">
+          <ul class="req-list">
+            <li>Must be in a <strong>USDA-designated rural area</strong> — generally towns under 35,000 population</li>
+            <li>Eligibility verified at <strong>usda.gov</strong> by address — not determined by appraiser</li>
+            <li>Many suburban areas near major cities are <strong>ineligible</strong> even if they feel rural</li>
+            <li>Must be the borrower's <strong>primary residence</strong></li>
+            <li>No investment properties or vacation homes</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="icon">🏠</span> Property Type Eligibility</div>
+        <div class="card-body" style="overflow-x:auto;">
+          <table class="repair-table">
+            <thead><tr><th>Property Type</th><th>Eligible?</th></tr></thead>
+            <tbody>
+              <tr><td>Single-family homes</td><td><span class="badge no">Yes</span></td></tr>
+              <tr><td>Condos (approved list)</td><td><span class="badge no">Yes</span></td></tr>
+              <tr><td>Manufactured homes (permanently affixed)</td><td><span class="badge cond">Yes w/ limits</span></td></tr>
+              <tr><td>Multi-unit (2–4 units)</td><td><span class="badge yes">Not Eligible</span></td></tr>
+              <tr><td>Working farms / income-producing land</td><td><span class="badge yes">Not Eligible</span></td></tr>
+              <tr><td>New construction</td><td><span class="badge cond">Yes w/ guidelines</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="icon">✨</span> Modesty Standard (USDA Unique)</div>
+        <div class="card-body">
+          <ul class="req-list">
+            <li>No specific square footage cap, but home must be <strong>typical for the area</strong></li>
+            <li>Properties with in-ground pools are allowable but <strong>flagged for modesty review</strong></li>
+            <li>No accessory dwelling units intended for income production</li>
+            <li>Site size must be typical for the area — large acreage can trigger additional review</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="icon">🏗️</span> Minimum Property Standards</div>
+        <div class="card-body">
+          <ul class="req-list">
+            <li>Roof must be in good condition with reasonable remaining life; no active leaks</li>
+            <li>Foundation structurally sound, no major cracks or settlement</li>
+            <li>Adequate heating for climate; functional plumbing with hot and cold water</li>
+            <li>Electrical system must be safe with adequate capacity</li>
+            <li>Crawl spaces must be dry, ventilated, and accessible</li>
+            <li>Pre-1978 homes require chipping/peeling paint to be remediated</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="icon">💧</span> Water &amp; Wastewater</div>
+        <div class="card-body">
+          <ul class="req-list">
+            <li>Private wells — <strong>water quality test required</strong>; must meet EPA/state standards</li>
+            <li>Septic systems — must be functional; inspection typically required</li>
+            <li>Well-to-septic separation must meet local health codes</li>
+            <li>Community water/sewer preferred where available</li>
+            <li>Tribal/community-operated systems must be functional and reliable</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="icon">🌿</span> Site Conditions</div>
+        <div class="card-body">
+          <ul class="req-list">
+            <li>No drainage issues or standing water near foundation</li>
+            <li>No environmental hazards (underground storage tanks, contamination)</li>
+            <li>Must have adequate all-weather road access</li>
+            <li>Flood zone properties require flood insurance — not an automatic disqualifier</li>
+            <li>WDO (termite) inspection required in high-risk states</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="icon">🔧</span> Required Repairs vs. Cosmetic</div>
+        <div class="card-body" style="overflow-x:auto;">
+          <table class="repair-table">
+            <thead><tr><th>Condition</th><th>Repair Required?</th></tr></thead>
+            <tbody>
+              <tr><td>Peeling paint (pre-1978)</td><td><span class="badge yes">Yes</span></td></tr>
+              <tr><td>Active roof leaks</td><td><span class="badge yes">Yes</span></td></tr>
+              <tr><td>Non-functional plumbing/electrical</td><td><span class="badge yes">Yes</span></td></tr>
+              <tr><td>Failed well water test</td><td><span class="badge yes">Yes</span></td></tr>
+              <tr><td>Failing septic system</td><td><span class="badge yes">Yes</span></td></tr>
+              <tr><td>Cosmetic wear and tear</td><td><span class="badge no">No</span></td></tr>
+              <tr><td>Functional but dated systems</td><td><span class="badge no">No</span></td></tr>
+              <tr><td>In-ground pool (functional)</td><td><span class="badge cond">Modesty Review</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="icon">🏗️</span> New Construction Requirements</div>
+        <div class="card-body">
+          <ul class="req-list">
+            <li>Must meet <strong>local building codes</strong></li>
+            <li>Requires a <strong>one-year builder warranty</strong></li>
+            <li>Final inspection required before loan closes</li>
+            <li>Must have thermal standards (insulation requirements) per HUD guidelines</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="highlight-box warn">
+      <strong>Key USDA Distinction</strong>
+      USDA appraisals are unique in that location and modesty are as important as condition. A perfectly maintained home in a non-rural area or with luxury features can still fail USDA eligibility — something not a factor in FHA or VA appraisals.
+    </div>
+
+    <div class="card" style="margin-top:20px;">
+      <div class="card-header"><span class="icon">🔗</span> Official USDA Resources</div>
+      <div class="card-body">
+        <ul class="resource-links">
+          <li><a href="https://www.rd.usda.gov/programs-services/single-family-housing-programs/single-family-housing-guaranteed-loan-program" target="_blank" rel="noopener">
+            <span class="res-icon">🏛️</span>
+            <span class="res-text"><span class="res-label">USDA Single Family Housing Guaranteed Loan Program</span><span class="res-desc">rd.usda.gov — Program overview, eligibility, and lender information</span></span>
+          </a></li>
+          <li><a href="https://www.rd.usda.gov/programs-services/single-family-housing-programs/single-family-housing-direct-home-loans" target="_blank" rel="noopener">
+            <span class="res-icon">🏛️</span>
+            <span class="res-text"><span class="res-label">USDA Single Family Housing Direct Loan Program</span><span class="res-desc">rd.usda.gov — Direct loan program for low- and very-low-income applicants</span></span>
+          </a></li>
+          <li><a href="https://eligibility.sc.egov.usda.gov/eligibility/welcomeAction.do?pageAction=sfp" target="_blank" rel="noopener">
+            <span class="res-icon">🗺️</span>
+            <span class="res-text"><span class="res-label">USDA Property Eligibility Map</span><span class="res-desc">eligibility.sc.egov.usda.gov — Verify if a property address is in an eligible rural area</span></span>
+          </a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== SECTION 184 ===================== -->
+  <div id="tab-sec184" class="tab-panel">
+    <div class="loan-banner sec184">
+      <div class="loan-banner-icon">🦅</div>
+      <div class="loan-banner-text">
+        <h2>HUD Section 184 — Native American Home Loan</h2>
+        <p>Designed for Native American and Alaska Native tribal members. Follows <strong>HUD 4000.1</strong> for property condition, but the most distinctive aspects involve <strong>trust land eligibility, leasehold requirements, and BIA approvals</strong>. Appraiser experience with tribal land is critical.</p>
+      </div>
+    </div>
+
+    <div class="quick-stats">
+      <div class="stat-card"><div class="stat-label">Down Payment (under $50K)</div><div class="stat-value">1.25%</div></div>
+      <div class="stat-card"><div class="stat-label">Down Payment (over $50K)</div><div class="stat-value">2.25%</div></div>
+      <div class="stat-card"><div class="stat-label">PMI Required</div><div class="stat-value">No</div></div>
+      <div class="stat-card"><div class="stat-label">Appraisal Standard</div><div class="stat-value">HUD 4000.1</div></div>
+      <div class="stat-card"><div class="stat-label">Trust Land Eligible</div><div class="stat-value">Yes</div></div>
+    </div>
+
+    <div class="section-grid">
+      <div class="card">
+        <div class="card-header"><span class="icon">📜</span> Eligible Land Types (Unique to Section 184)</div>
+        <div class="card-body" style="overflow-x:auto;">
+          <table class="repair-table">
+            <thead><tr><th>Land Type</th><th>Eligible?</th></tr></thead>
+            <tbody>
+              <tr><td>Fee simple (standard ownership)</td><td><span class="badge no">Yes</span></td></tr>
+              <tr><td>Tribal trust land</td><td><span class="badge cond">Yes — BIA/tribal approval</span></td></tr>
+              <tr><td>Individually allotted trust land</td><td><span class="badge cond">Yes — BIA approval</span></td></tr>
+              <tr><td>Alaska Native allotments</td><td><span class="badge no">Yes</span></td></tr>
+              <tr><td>Hawaiian home lands</td><td><span class="badge cond">Yes — specific program</span></td></tr>
+              <tr><td>Leasehold on trust land</td><td><span class="badge cond">Yes — lease must meet HUD req.</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="icon">📋</span> Leasehold Requirements</div>
+        <div class="card-body">
+          <ul class="req-list">
+            <li>Lease term must extend <strong>at least 25 years beyond</strong> the loan maturity date</li>
+            <li>Lease must be <strong>HUD-approved</strong> and allow for foreclosure/assignment if needed</li>
+            <li>Bureau of Indian Affairs (BIA) approval often required</li>
+            <li>Tribal authorization or consent may be required depending on the tribe</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="icon">📊</span> Comparable Sales Challenges</div>
+        <div class="card-body">
+          <ul class="req-list">
+            <li>Finding comparable sales <strong>on or near tribal land</strong> is often difficult</li>
+            <li>Appraisers may use comparables from <strong>off-reservation areas</strong> with adjustments</li>
+            <li>HUD allows broader geographic search for comps than conventional appraisals</li>
+            <li>Some reservations have very thin or no sales history — appraiser must justify methodology</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="icon">🏗️</span> Minimum Property Standards</div>
+        <div class="card-body">
+          <ul class="req-list">
+            <li>Roof must be in good condition with reasonable remaining useful life</li>
+            <li>Foundation structurally sound; crawl spaces dry, accessible, and ventilated</li>
+            <li>Adequate heating for climate — especially critical in tribal areas with harsh winters</li>
+            <li>Functional plumbing with hot and cold running water</li>
+            <li>Electrical system must be safe with no exposed wiring</li>
+            <li>Pre-1978 homes require lead paint identification and remediation</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="icon">💧</span> Water &amp; Wastewater</div>
+        <div class="card-body">
+          <ul class="req-list">
+            <li>Private wells — <strong>water quality test required</strong>; must meet safe drinking water standards</li>
+            <li>Septic systems — must be functional; inspection typically required</li>
+            <li>Tribal community water/sewer systems must be functional and reliable</li>
+            <li>Well-to-septic separation must meet local or tribal health codes</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="icon">⚠️</span> Practical Challenges Unique to Section 184</div>
+        <div class="card-body">
+          <ul class="req-list">
+            <li><strong>Appraiser availability</strong> — few appraisers are experienced with trust land; can delay process</li>
+            <li><strong>Thin comparable market</strong> — limited sales data on many reservations</li>
+            <li><strong>BIA processing times</strong> — trust land approvals can add weeks or months to closing</li>
+            <li><strong>Tribal approval requirements</strong> — some tribes require right of first refusal or consent</li>
+            <li><strong>Jurisdictional complexity</strong> — state laws may not fully apply on tribal land</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="icon">🔧</span> Required Repairs vs. Cosmetic</div>
+        <div class="card-body" style="overflow-x:auto;">
+          <table class="repair-table">
+            <thead><tr><th>Condition</th><th>Repair Required?</th></tr></thead>
+            <tbody>
+              <tr><td>Peeling paint (pre-1978)</td><td><span class="badge yes">Yes</span></td></tr>
+              <tr><td>Active roof leaks</td><td><span class="badge yes">Yes</span></td></tr>
+              <tr><td>Non-functional plumbing/electrical</td><td><span class="badge yes">Yes</span></td></tr>
+              <tr><td>Failed well water test</td><td><span class="badge yes">Yes</span></td></tr>
+              <tr><td>Failing septic</td><td><span class="badge yes">Yes</span></td></tr>
+              <tr><td>Inadequate heating</td><td><span class="badge yes">Yes</span></td></tr>
+              <tr><td>Cosmetic wear and tear</td><td><span class="badge no">No</span></td></tr>
+              <tr><td>Functional but dated systems</td><td><span class="badge no">No</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="highlight-box info">
+      <strong>Key Section 184 Distinction</strong>
+      Section 184 appraisals are technically similar to FHA in property condition standards, but the land tenure and title complexity is what sets them apart. An appraiser without trust land experience can significantly undervalue the property or miss approval requirements — making appraiser selection especially critical.
+    </div>
+
+    <div class="card" style="margin-top:20px;">
+      <div class="card-header"><span class="icon">🔗</span> Official Section 184 Resources</div>
+      <div class="card-body">
+        <ul class="resource-links">
+          <li><a href="https://www.hud.gov/section184" target="_blank" rel="noopener">
+            <span class="res-icon">🏛️</span>
+            <span class="res-text"><span class="res-label">HUD Section 184 Indian Home Loan Guarantee Program</span><span class="res-desc">hud.gov — Program overview, eligibility, participating lenders, and tribal information</span></span>
+          </a></li>
+          <li><a href="https://www.hud.gov/program_offices/public_indian_housing/ih/homeownership/184" target="_blank" rel="noopener">
+            <span class="res-icon">📖</span>
+            <span class="res-text"><span class="res-label">HUD Office of Public and Indian Housing — Section 184 Detail</span><span class="res-desc">hud.gov — Detailed program guidelines, trust land requirements, and lender resources</span></span>
+          </a></li>
+          <li><a href="https://www.hud.gov/hud-partners/single-family-handbook-4000-1" target="_blank" rel="noopener">
+            <span class="res-icon">📖</span>
+            <span class="res-text"><span class="res-label">HUD Handbook 4000.1 — Property Standards (shared with FHA)</span><span class="res-desc">hud.gov — Section 184 property condition standards follow HUD 4000.1 guidelines</span></span>
+          </a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== CONVENTIONAL ===================== -->
+  <div id="tab-conv" class="tab-panel">
+    <div class="loan-banner conv">
+      <div class="loan-banner-icon">🏦</div>
+      <div class="loan-banner-text">
+        <h2>Conventional Loans — Secondary Market &amp; Portfolio</h2>
+        <p>Conventional loans have far fewer mandated property condition requirements than government-backed loans. Standards shift depending on whether the loan is sold to <strong>Fannie Mae / Freddie Mac</strong> (secondary market) or <strong>held in-house</strong> by the lender as a portfolio loan.</p>
+      </div>
+    </div>
+
+    <div class="quick-stats">
+      <div class="stat-card"><div class="stat-label">Min. Down Payment</div><div class="stat-value">3%</div></div>
+      <div class="stat-card"><div class="stat-label">Appraisal Waiver</div><div class="stat-value">Yes (eligible)</div></div>
+      <div class="stat-card"><div class="stat-label">Mandatory Repairs</div><div class="stat-value">Rare</div></div>
+      <div class="stat-card"><div class="stat-label">Home Inspection</div><div class="stat-value">Not Required</div></div>
+      <div class="stat-card"><div class="stat-label">Termite Inspection</div><div class="stat-value">State Law Only</div></div>
+    </div>
+
+    <div class="accordion" style="margin-bottom:24px;">
+      <div class="accordion-item">
+        <button class="accordion-btn" onclick="toggleAccordion(this)">
+          Secondary Market Loans (Fannie Mae / Freddie Mac) <span class="arrow">▼</span>
+        </button>
+        <div class="accordion-body">
+          <ul class="req-list" style="margin-bottom:14px;">
+            <li>Appraiser must be <strong>state-licensed or certified</strong> and independent</li>
+            <li>Must be selected through an <strong>Appraisal Management Company (AMC)</strong> or approved panel</li>
+            <li>Must have <strong>geographic competency</strong> in the subject market</li>
+          </ul>
+          <p style="font-weight:600; margin-bottom:8px; font-size:0.88rem;">Appraisal Forms by Property Type:</p>
+          <table class="repair-table" style="margin-bottom:14px;">
+            <thead><tr><th>Property Type</th><th>Required Form</th></tr></thead>
+            <tbody>
+              <tr><td>Single-family (interior)</td><td>URAR — Form 1004</td></tr>
+              <tr><td>Single-family (exterior only)</td><td>Form 2055</td></tr>
+              <tr><td>Condo</td><td>Form 1073</td></tr>
+              <tr><td>2–4 unit</td><td>Form 1025</td></tr>
+              <tr><td>Desktop appraisal</td><td>Form 1004 (desktop)</td></tr>
+            </tbody>
+          </table>
+          <p style="font-weight:600; margin-bottom:8px; font-size:0.88rem;">What Fannie/Freddie Do NOT Require (unlike government loans):</p>
+          <ul class="req-list">
+            <li>Specific health and safety repairs (unless they affect value/marketability)</li>
+            <li>Termite inspections (unless required by state law or flagged by appraiser)</li>
+            <li>Well/water testing</li>
+            <li>Lead paint remediation</li>
+            <li>Handrails, smoke detectors, or other safety items</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <button class="accordion-btn" onclick="toggleAccordion(this)">
+          UAD Condition Ratings (C1–C6) <span class="arrow">▼</span>
+        </button>
+        <div class="accordion-body">
+          <p style="margin-bottom:12px; font-size:0.88rem;">Fannie Mae and Freddie Mac use a standardized <strong>Condition Rating scale</strong>:</p>
+          <table class="repair-table">
+            <thead><tr><th>Rating</th><th>Description</th><th>Fundable?</th></tr></thead>
+            <tbody>
+              <tr><td><strong>C1</strong></td><td>New construction, never occupied</td><td><span class="badge no">Yes</span></td></tr>
+              <tr><td><strong>C2</strong></td><td>Near new, minimal wear</td><td><span class="badge no">Yes</span></td></tr>
+              <tr><td><strong>C3</strong></td><td>Adequately maintained, normal wear</td><td><span class="badge no">Yes</span></td></tr>
+              <tr><td><strong>C4</strong></td><td>Minor deferred maintenance</td><td><span class="badge no">Yes</span></td></tr>
+              <tr><td><strong>C5</strong></td><td>Significant deferred maintenance</td><td><span class="badge cond">May require repairs</span></td></tr>
+              <tr><td><strong>C6</strong></td><td>Substantial damage/neglect</td><td><span class="badge yes">Generally not eligible</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <button class="accordion-btn" onclick="toggleAccordion(this)">
+          Appraisal Modernization Options <span class="arrow">▼</span>
+        </button>
+        <div class="accordion-body">
+          <table class="repair-table">
+            <thead><tr><th>Option</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Traditional Appraisal</strong></td><td>Full interior/exterior physical inspection</td></tr>
+              <tr><td><strong>Desktop Appraisal</strong></td><td>No physical inspection; uses MLS data and public records</td></tr>
+              <tr><td><strong>Appraisal Waiver (ACE)</strong></td><td>No appraisal at all; based on AVM + loan history</td></tr>
+              <tr><td><strong>Hybrid Appraisal</strong></td><td>Third-party inspector does walkthrough; appraiser completes report remotely</td></tr>
+            </tbody>
+          </table>
+          <p style="margin-top:10px; font-size:0.85rem; color:var(--text-light);">Waivers and desktop options are determined by Fannie's <strong>DU</strong> or Freddie's <strong>LPA</strong> automated underwriting systems. Typically available for lower LTV, strong credit, and well-documented properties.</p>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <button class="accordion-btn" onclick="toggleAccordion(this)">
+          Portfolio / In-House Loans <span class="arrow">▼</span>
+        </button>
+        <div class="accordion-body">
+          <p style="margin-bottom:10px; font-size:0.88rem;">Portfolio loans are held on the lender's own books and <strong>never sold to Fannie/Freddie</strong>, giving lenders maximum flexibility. Standards are governed by:</p>
+          <ul class="req-list" style="margin-bottom:14px;">
+            <li><strong>USPAP</strong> — Uniform Standards of Professional Appraisal Practice; federally required for all appraisals tied to federally regulated lenders</li>
+            <li><strong>FIRREA</strong> — Appraisals required for transactions over $500,000; below that, an evaluation may suffice</li>
+            <li><strong>OCC, FDIC, or Federal Reserve</strong> bank examiner guidelines depending on charter type</li>
+          </ul>
+          <p style="font-weight:600; margin-bottom:8px; font-size:0.88rem;">Portfolio Lender Flexibility:</p>
+          <ul class="req-list">
+            <li>May accept <strong>in-house appraisers</strong> (not required to use AMC)</li>
+            <li>May use <strong>AVMs</strong> (Automated Valuation Models) for lower-risk transactions</li>
+            <li>Can set their own condition thresholds — more or less flexible than Fannie/Freddie</li>
+            <li>May require additional inspections at their discretion (roof, foundation, environmental)</li>
+            <li>Non-warrantable condos, mixed-use, large acreage, or unique properties often go portfolio</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-grid">
+      <div class="card">
+        <div class="card-header"><span class="icon">📋</span> Secondary Market vs. Portfolio</div>
+        <div class="card-body" style="overflow-x:auto;">
+          <table class="repair-table">
+            <thead><tr><th>Feature</th><th>Secondary Market</th><th>Portfolio</th></tr></thead>
+            <tbody>
+              <tr><td>Appraisal required</td><td>Yes (waiver options)</td><td>FIRREA threshold</td></tr>
+              <tr><td>AMC required</td><td>Yes</td><td>Not always</td></tr>
+              <tr><td>Condition standard</td><td>C1–C4 rating</td><td>Lender-defined</td></tr>
+              <tr><td>Mandatory repairs</td><td>Rarely</td><td>Lender discretion</td></tr>
+              <tr><td>AVM accepted</td><td>Sometimes</td><td>Yes (under threshold)</td></tr>
+              <tr><td>Home inspection</td><td>Not required</td><td>Sometimes required</td></tr>
+              <tr><td>Unique properties</td><td>May not qualify</td><td>Often accommodated</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="icon">🔧</span> Conventional vs. Government: Repair Standards</div>
+        <div class="card-body" style="overflow-x:auto;">
+          <table class="repair-table">
+            <thead><tr><th>Condition</th><th>Conventional</th><th>FHA/VA/USDA</th></tr></thead>
+            <tbody>
+              <tr><td>Peeling paint (pre-1978)</td><td><span class="badge no">No</span></td><td><span class="badge yes">Yes</span></td></tr>
+              <tr><td>Missing handrail</td><td><span class="badge no">No</span></td><td><span class="badge yes">Yes</span></td></tr>
+              <tr><td>Termite inspection</td><td><span class="badge cond">State law only</span></td><td><span class="badge yes">Often required</span></td></tr>
+              <tr><td>Well water test</td><td><span class="badge no">No</span></td><td><span class="badge yes">Yes</span></td></tr>
+              <tr><td>Smoke detectors</td><td><span class="badge no">No</span></td><td><span class="badge yes">Yes (FHA)</span></td></tr>
+              <tr><td>Active roof leak</td><td><span class="badge cond">If affects value</span></td><td><span class="badge yes">Yes</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="highlight-box warn">
+      <strong>Key Conventional Takeaway</strong>
+      A property that fails FHA/VA/USDA standards can often still be financed conventionally if the condition doesn't impair market value. The appraiser notes conditions but is not required to flag them as repairs unless they affect value — a significant difference from government loans.
+    </div>
+
+    <div class="card" style="margin-top:20px;">
+      <div class="card-header"><span class="icon">🔗</span> Official Conventional Loan Resources</div>
+      <div class="card-body">
+        <ul class="resource-links">
+          <li><a href="https://selling-guide.fanniemae.com/sel/b4-1.1/general-appraisal-requirements" target="_blank" rel="noopener">
+            <span class="res-icon">📖</span>
+            <span class="res-text"><span class="res-label">Fannie Mae Selling Guide — Appraisal Requirements (B4-1.1)</span><span class="res-desc">selling-guide.fanniemae.com — Official appraisal standards for Fannie Mae loans</span></span>
+          </a></li>
+          <li><a href="https://singlefamily.fanniemae.com/originating-underwriting/mortgage-products/homeready-mortgage" target="_blank" rel="noopener">
+            <span class="res-icon">🏠</span>
+            <span class="res-text"><span class="res-label">Fannie Mae HomeReady Mortgage</span><span class="res-desc">singlefamily.fanniemae.com — 3% down program for low-to-moderate income buyers</span></span>
+          </a></li>
+          <li><a href="https://singlefamily.fanniemae.com/originating-underwriting/appraisal-waivers" target="_blank" rel="noopener">
+            <span class="res-icon">📋</span>
+            <span class="res-text"><span class="res-label">Fannie Mae Value Acceptance (Appraisal Waivers)</span><span class="res-desc">singlefamily.fanniemae.com — ACE appraisal waiver program details and eligibility</span></span>
+          </a></li>
+          <li><a href="https://guide.freddiemac.com/" target="_blank" rel="noopener">
+            <span class="res-icon">📖</span>
+            <span class="res-text"><span class="res-label">Freddie Mac Seller/Servicer Guide</span><span class="res-desc">guide.freddiemac.com — Official underwriting and appraisal guidelines for Freddie Mac loans</span></span>
+          </a></li>
+          <li><a href="https://sf.freddiemac.com/working-with-us/origination-underwriting/mortgage-products/home-possible" target="_blank" rel="noopener">
+            <span class="res-icon">🏠</span>
+            <span class="res-text"><span class="res-label">Freddie Mac Home Possible Mortgage</span><span class="res-desc">sf.freddiemac.com — 3% down program for low-to-moderate income buyers</span></span>
+          </a></li>
+          <li><a href="https://sf.freddiemac.com/working-with-us/appraisers/overview" target="_blank" rel="noopener">
+            <span class="res-icon">📋</span>
+            <span class="res-text"><span class="res-label">Freddie Mac Appraisal Requirements Overview</span><span class="res-desc">sf.freddiemac.com — Freddie Mac appraisal standards and appraiser resources</span></span>
+          </a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== COMPARE ALL ===================== -->
+  <div id="tab-compare" class="tab-panel">
+    <div style="margin-bottom:24px;">
+      <h2 style="font-size:1.3rem; margin-bottom:6px;">Full Program Comparison</h2>
+      <p style="color:var(--text-light); font-size:0.9rem;">Side-by-side view of all loan programs across key categories.</p>
+    </div>
+
+    <div class="card" style="margin-bottom:24px;">
+      <div class="card-header"><span class="icon">💰</span> Loan Program Overview</div>
+      <div class="card-body" style="overflow-x:auto;">
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th>Feature</th>
+              <th class="th-fha">FHA</th>
+              <th class="th-va">VA</th>
+              <th class="th-usda">USDA</th>
+              <th class="th-sec184">Sec. 184</th>
+              <th class="th-conv">Conventional</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Min. Down Payment</td><td>3.5%</td><td>0%</td><td>0%</td><td>1.25–2.25%</td><td>3%</td></tr>
+            <tr><td>Mortgage Insurance</td><td>MIP (required)</td><td>No PMI</td><td>Low fee</td><td>No PMI</td><td>PMI if &lt;20%</td></tr>
+            <tr><td>Min. Credit Score</td><td>580 (3.5% down)</td><td>~620 lender</td><td>640+</td><td>Flexible</td><td>620+ typical</td></tr>
+            <tr><td>Eligibility</td><td>Anyone</td><td>Military/Veterans</td><td>Rural + income</td><td>Native American</td><td>Anyone</td></tr>
+            <tr><td>Location Restriction</td><td>None</td><td>None</td><td>Rural only</td><td>None</td><td>None</td></tr>
+            <tr><td>Multi-unit (2–4)</td><td>Yes</td><td>Yes</td><td>No</td><td>No</td><td>Yes</td></tr>
+            <tr><td>Loan Limits</td><td>County-based</td><td>No limit (full entitlement)</td><td>Area-based</td><td>County-based</td><td>Conforming limits</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:24px;">
+      <div class="card-header"><span class="icon">🔍</span> Appraisal Standards Comparison</div>
+      <div class="card-body" style="overflow-x:auto;">
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th>Feature</th>
+              <th class="th-fha">FHA</th>
+              <th class="th-va">VA</th>
+              <th class="th-usda">USDA</th>
+              <th class="th-sec184">Sec. 184</th>
+              <th class="th-conv">Conventional</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Appraisal standard</td><td>HUD 4000.1</td><td>VA Pam. 26-7</td><td>HUD 4000.1</td><td>HUD 4000.1</td><td>Fannie/Freddie Guide</td></tr>
+            <tr><td>Appraiser type</td><td>FHA-approved</td><td>VA-certified only</td><td>State-certified</td><td>HUD-approved</td><td>State-licensed</td></tr>
+            <tr><td>AMC required</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Secondary market only</td></tr>
+            <tr><td>Appraisal waiver</td><td>No</td><td>No</td><td>No</td><td>No</td><td>Yes (DU/LPA eligible)</td></tr>
+            <tr><td>Desktop appraisal</td><td>No</td><td>No</td><td>No</td><td>No</td><td>Yes (eligible loans)</td></tr>
+            <tr><td>Dual purpose (value + condition)</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Value only</td></tr>
+            <tr><td>Modesty standard</td><td>No</td><td>No</td><td>Yes</td><td>No</td><td>No</td></tr>
+            <tr><td>Trust land eligible</td><td>No</td><td>No</td><td>No</td><td>Yes</td><td>No</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:24px;">
+      <div class="card-header"><span class="icon">🔧</span> Inspection &amp; Repair Requirements Comparison</div>
+      <div class="card-body" style="overflow-x:auto;">
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th>Requirement</th>
+              <th class="th-fha">FHA</th>
+              <th class="th-va">VA</th>
+              <th class="th-usda">USDA</th>
+              <th class="th-sec184">Sec. 184</th>
+              <th class="th-conv">Conventional</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Home inspection required</td><td>No</td><td>No</td><td>No</td><td>No</td><td>No</td></tr>
+            <tr><td>Termite inspection</td><td>If flagged</td><td>Most states</td><td>High-risk states</td><td>If flagged</td><td>State law only</td></tr>
+            <tr><td>Well water test</td><td>Yes (private well)</td><td>Yes (private well)</td><td>Yes (private well)</td><td>Yes (private well)</td><td>No</td></tr>
+            <tr><td>Septic inspection</td><td>Often required</td><td>Often required</td><td>Often required</td><td>Often required</td><td>No</td></tr>
+            <tr><td>Lead paint remediation</td><td>Yes (pre-1978)</td><td>Yes (pre-1978)</td><td>Yes (pre-1978)</td><td>Yes (pre-1978)</td><td>No</td></tr>
+            <tr><td>Handrails (3+ steps)</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td><td>No</td></tr>
+            <tr><td>Smoke detectors</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td><td>No</td></tr>
+            <tr><td>Roof: 2-layer max</td><td>No</td><td>Yes</td><td>No</td><td>No</td><td>No</td></tr>
+            <tr><td>All-weather road access</td><td>Adequate access</td><td>All-weather required</td><td>Adequate access</td><td>Adequate access</td><td>Not specified</td></tr>
+            <tr><td>Wood stove as sole heat</td><td>Allowed w/ conditions</td><td>Not acceptable</td><td>Not acceptable</td><td>Not acceptable</td><td>Appraiser judgment</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="highlight-box info">
+      <strong>Bottom Line</strong>
+      Government loans (FHA, VA, USDA, Section 184) prioritize borrower/occupant protection with mandatory health and safety repair requirements. Conventional loans prioritize market value with minimal condition mandates — making them more flexible for properties that need work but don't qualify for government financing.
+    </div>
+
+    <div class="card" style="margin-top:20px;">
+      <div class="card-header"><span class="icon">🔗</span> Official Resources — All Programs</div>
+      <div class="card-body">
+        <ul class="resource-links">
+          <li><a href="https://www.hud.gov/fha" target="_blank" rel="noopener">
+            <span class="res-icon">🏛️</span>
+            <span class="res-text"><span class="res-label">FHA — HUD.gov</span><span class="res-desc">hud.gov — FHA loan program overview</span></span>
+          </a></li>
+          <li><a href="https://www.hud.gov/hud-partners/single-family-handbook-4000-1" target="_blank" rel="noopener">
+            <span class="res-icon">📖</span>
+            <span class="res-text"><span class="res-label">HUD Handbook 4000.1 (FHA &amp; USDA &amp; Section 184 property standards)</span><span class="res-desc">hud.gov — Minimum Property Standards used by FHA, USDA, and Section 184</span></span>
+          </a></li>
+          <li><a href="https://www.va.gov/housing-assistance/home-loans/" target="_blank" rel="noopener">
+            <span class="res-icon">🎖️</span>
+            <span class="res-text"><span class="res-label">VA Home Loans — VA.gov</span><span class="res-desc">va.gov — VA loan program overview and eligibility</span></span>
+          </a></li>
+          <li><a href="https://benefits.va.gov/warms/pam26_7.asp" target="_blank" rel="noopener">
+            <span class="res-icon">📖</span>
+            <span class="res-text"><span class="res-label">VA Lenders Handbook — Pamphlet 26-7</span><span class="res-desc">benefits.va.gov — Official VA appraisal and MPR guidelines</span></span>
+          </a></li>
+          <li><a href="https://www.rd.usda.gov/programs-services/single-family-housing-programs/single-family-housing-guaranteed-loan-program" target="_blank" rel="noopener">
+            <span class="res-icon">🌾</span>
+            <span class="res-text"><span class="res-label">USDA Guaranteed Loan Program — USDA.gov</span><span class="res-desc">rd.usda.gov — USDA rural housing loan program overview</span></span>
+          </a></li>
+          <li><a href="https://eligibility.sc.egov.usda.gov/eligibility/welcomeAction.do?pageAction=sfp" target="_blank" rel="noopener">
+            <span class="res-icon">🗺️</span>
+            <span class="res-text"><span class="res-label">USDA Property Eligibility Map</span><span class="res-desc">eligibility.sc.egov.usda.gov — Check if a property is in a USDA-eligible rural area</span></span>
+          </a></li>
+          <li><a href="https://www.hud.gov/section184" target="_blank" rel="noopener">
+            <span class="res-icon">🦅</span>
+            <span class="res-text"><span class="res-label">HUD Section 184 — Indian Home Loan Guarantee Program</span><span class="res-desc">hud.gov — Section 184 program overview, tribal eligibility, and lender list</span></span>
+          </a></li>
+          <li><a href="https://selling-guide.fanniemae.com/sel/b4-1.1/general-appraisal-requirements" target="_blank" rel="noopener">
+            <span class="res-icon">📖</span>
+            <span class="res-text"><span class="res-label">Fannie Mae Selling Guide — Appraisal Requirements</span><span class="res-desc">selling-guide.fanniemae.com — Conventional appraisal standards (secondary market)</span></span>
+          </a></li>
+          <li><a href="https://guide.freddiemac.com/" target="_blank" rel="noopener">
+            <span class="res-icon">📖</span>
+            <span class="res-text"><span class="res-label">Freddie Mac Seller/Servicer Guide</span><span class="res-desc">guide.freddiemac.com — Conventional underwriting and appraisal guidelines</span></span>
+          </a></li>
+          <li><a href="https://www.consumerfinance.gov/buy-a-house/" target="_blank" rel="noopener">
+            <span class="res-icon">📋</span>
+            <span class="res-text"><span class="res-label">CFPB — Buying a House</span><span class="res-desc">consumerfinance.gov — Consumer guide to loan types, appraisals, and homebuying</span></span>
+          </a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<div class="page-footer">
+  Loan Requirements &amp; Appraisal Standards Reference &nbsp;|&nbsp; For informational purposes only. Always verify current guidelines with official program sources:
+  <a href="https://www.hud.gov/fha" target="_blank" rel="noopener" style="color:var(--accent);">HUD/FHA</a> &nbsp;&middot;&nbsp;
+  <a href="https://www.va.gov/housing-assistance/home-loans/" target="_blank" rel="noopener" style="color:var(--accent);">VA</a> &nbsp;&middot;&nbsp;
+  <a href="https://www.rd.usda.gov/programs-services/single-family-housing-programs/single-family-housing-guaranteed-loan-program" target="_blank" rel="noopener" style="color:var(--accent);">USDA</a> &nbsp;&middot;&nbsp;
+  <a href="https://www.hud.gov/section184" target="_blank" rel="noopener" style="color:var(--accent);">Section 184</a> &nbsp;&middot;&nbsp;
+  <a href="https://selling-guide.fanniemae.com/" target="_blank" rel="noopener" style="color:var(--accent);">Fannie Mae</a> &nbsp;&middot;&nbsp;
+  <a href="https://guide.freddiemac.com/" target="_blank" rel="noopener" style="color:var(--accent);">Freddie Mac</a>
+</div>
+
+<script>
+  function showTab(name) {
+    // Hide all panels
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+
+    // Show selected panel
+    document.getElementById('tab-' + name).classList.add('active');
+
+    // Activate matching button
+    const btns = document.querySelectorAll('.tab-btn');
+    btns.forEach(btn => {
+      if (btn.getAttribute('onclick') === "showTab('" + name + "')") {
+        btn.classList.add('active');
+      }
+    });
+  }
+
+  function toggleAccordion(btn) {
+    const body = btn.nextElementSibling;
+    const isOpen = body.classList.contains('open');
+    body.classList.toggle('open', !isOpen);
+    btn.classList.toggle('open', !isOpen);
+  }
+</script>
+
+</body>
+</html>
