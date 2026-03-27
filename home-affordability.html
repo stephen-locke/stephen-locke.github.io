@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Home Affordability Calculator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:    #1a2744;
+      --red:     #b5112c;
+      --light:   #f5f7fa;
+      --white:   #ffffff;
+      --gray:    #6b7280;
+      --border:  #e5e7eb;
+      --text:    #1f2937;
+      --accent:  #2563eb;
+      --green:   #16a34a;
+      --font-sans: 'Inter', system-ui, sans-serif;
+      --font-serif:'Lora', Georgia, serif;
+      --radius: 10px;
+      --shadow: 0 2px 12px rgba(0,0,0,.08);
+      --shadow-lg: 0 8px 32px rgba(0,0,0,.14);
+    }
+
+    html { scroll-behavior: smooth; font-size: 16px; }
+    body { font-family: var(--font-sans); color: var(--text); background: var(--light); line-height: 1.65; min-height: 100vh; }
+
+    /* ---- NAV ---- */
+    nav {
+      background: var(--navy);
+      padding: .85rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+    nav a { color: #cbd5e1; text-decoration: none; font-size: .9rem; transition: color .2s; }
+    nav a:hover, nav a.home { color: #fff; font-weight: 600; }
+    nav .sep { color: #475569; }
+
+    /* ---- PAGE HEADER ---- */
+    .page-header {
+      background: linear-gradient(135deg, var(--navy) 0%, #243560 100%);
+      color: #fff;
+      padding: 2.5rem 1.5rem 2rem;
+      text-align: center;
+    }
+    .page-header h1 { font-family: var(--font-serif); font-size: clamp(1.6rem, 4vw, 2.4rem); margin-bottom: .5rem; }
+    .page-header p  { color: #94a3b8; font-size: .95rem; max-width: 56ch; margin: 0 auto; }
+
+    /* ---- LAYOUT ---- */
+    .calc-wrapper {
+      max-width: 1080px;
+      margin: 2rem auto;
+      padding: 0 1rem 3rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+    @media (max-width: 720px) {
+      .calc-wrapper { grid-template-columns: 1fr; }
+    }
+
+    /* ---- CARD ---- */
+    .card {
+      background: var(--white);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 1.5rem;
+    }
+    .card-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--navy);
+      border-bottom: 2px solid var(--border);
+      padding-bottom: .6rem;
+      margin-bottom: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+    }
+    .card-title .icon { font-size: 1.1rem; }
+
+    /* ---- FORM CONTROLS ---- */
+    .field { margin-bottom: 1.1rem; }
+    label {
+      display: block;
+      font-size: .82rem;
+      font-weight: 600;
+      color: var(--gray);
+      margin-bottom: .3rem;
+      letter-spacing: .02em;
+      text-transform: uppercase;
+    }
+    .input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .input-wrap .prefix, .input-wrap .suffix {
+      position: absolute;
+      font-size: .9rem;
+      color: var(--gray);
+      pointer-events: none;
+      font-weight: 600;
+    }
+    .input-wrap .prefix { left: .75rem; }
+    .input-wrap .suffix { right: .75rem; }
+    .input-wrap input {
+      width: 100%;
+      padding: .55rem .75rem;
+      border: 1.5px solid var(--border);
+      border-radius: 6px;
+      font-size: .95rem;
+      font-family: var(--font-sans);
+      color: var(--text);
+      transition: border-color .2s;
+      background: var(--white);
+    }
+    .input-wrap input:focus { outline: none; border-color: var(--accent); }
+    .input-wrap.has-prefix input { padding-left: 1.6rem; }
+    .input-wrap.has-suffix input { padding-right: 2.2rem; }
+
+    /* ---- TOGGLE SWITCH ---- */
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      gap: .7rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+    .toggle-row .toggle-label { font-size: .88rem; font-weight: 600; color: var(--text); flex: 1; min-width: 0; }
+    .toggle-row .toggle-hint  { font-size: .78rem; color: var(--gray); }
+
+    .switch { position: relative; display: inline-block; width: 44px; height: 24px; flex-shrink: 0; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider {
+      position: absolute; inset: 0;
+      background: #cbd5e1;
+      border-radius: 24px;
+      cursor: pointer;
+      transition: .25s;
+    }
+    .slider::before {
+      content: '';
+      position: absolute;
+      width: 18px; height: 18px;
+      left: 3px; bottom: 3px;
+      background: #fff;
+      border-radius: 50%;
+      transition: .25s;
+      box-shadow: 0 1px 3px rgba(0,0,0,.2);
+    }
+    .switch input:checked + .slider { background: var(--accent); }
+    .switch input:checked + .slider::before { transform: translateX(20px); }
+
+    /* ---- SEGMENT CONTROL (closing cost mode) ---- */
+    .seg-ctrl {
+      display: flex;
+      border: 1.5px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+      width: 100%;
+      margin-bottom: 1rem;
+    }
+    .seg-ctrl button {
+      flex: 1;
+      padding: .45rem .5rem;
+      border: none;
+      background: var(--white);
+      font-size: .82rem;
+      font-weight: 600;
+      color: var(--gray);
+      cursor: pointer;
+      transition: background .2s, color .2s;
+    }
+    .seg-ctrl button.active {
+      background: var(--navy);
+      color: #fff;
+    }
+    .seg-ctrl button:not(:last-child) { border-right: 1.5px solid var(--border); }
+
+    /* ---- RESULTS PANEL ---- */
+    .results-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-lg);
+      padding: 1.5rem;
+      grid-column: 1 / -1;
+    }
+
+    .result-hero {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .result-stat {
+      background: var(--light);
+      border-radius: 8px;
+      padding: 1rem 1.1rem;
+      border-left: 4px solid var(--accent);
+    }
+    .result-stat.highlight { border-left-color: var(--green); background: #f0fdf4; }
+    .result-stat.warn      { border-left-color: var(--red);   background: #fff1f2; }
+    .result-stat .stat-label { font-size: .76rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--gray); margin-bottom: .25rem; }
+    .result-stat .stat-value { font-size: 1.5rem; font-weight: 800; color: var(--navy); line-height: 1.1; }
+    .result-stat.highlight .stat-value { color: var(--green); }
+    .result-stat.warn      .stat-value { color: var(--red); }
+
+    /* ---- PAYMENT BREAKDOWN ---- */
+    .breakdown-title {
+      font-size: .9rem;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: .8rem;
+    }
+    .breakdown-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .9rem;
+    }
+    .breakdown-table td { padding: .4rem .5rem; }
+    .breakdown-table tr:not(:last-child) td { border-bottom: 1px solid var(--border); }
+    .breakdown-table .label-col { color: var(--gray); }
+    .breakdown-table .val-col   { text-align: right; font-weight: 600; }
+    .breakdown-table .total-row td { font-weight: 700; color: var(--navy); font-size: .95rem; border-top: 2px solid var(--navy) !important; padding-top: .6rem; }
+
+    /* ---- CLOSING COST TABLE ---- */
+    .closing-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .9rem;
+      margin-top: .8rem;
+    }
+    .closing-table td { padding: .4rem .5rem; }
+    .closing-table tr:not(:last-child) td { border-bottom: 1px solid var(--border); }
+    .closing-table .label-col { color: var(--gray); }
+    .closing-table .val-col   { text-align: right; font-weight: 600; }
+    .closing-table .total-row td { font-weight: 700; border-top: 2px solid var(--border) !important; padding-top: .6rem; }
+
+    /* ---- NOTE / ALERT ---- */
+    .note {
+      background: #fffbeb;
+      border: 1px solid #fcd34d;
+      border-radius: 6px;
+      padding: .75rem 1rem;
+      font-size: .82rem;
+      color: #92400e;
+      margin-top: 1rem;
+      display: none;
+    }
+    .note.visible { display: block; }
+
+    /* ---- DIVIDER ---- */
+    .divider { height: 1px; background: var(--border); margin: 1.2rem 0; }
+
+    /* ---- FOOTER ---- */
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      font-size: .8rem;
+      color: var(--gray);
+      border-top: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="home">Stephen L. Locke, Ph.D.</a>
+  <span class="sep">/</span>
+  <a href="#">Home Affordability Calculator</a>
+</nav>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <h1>Home Affordability Calculator</h1>
+  <p>Enter your financial details to find out how much home you can afford based on your desired monthly payment.</p>
+</div>
+
+<!-- CALCULATOR -->
+<div class="calc-wrapper">
+
+  <!-- LEFT COLUMN: Financing Inputs -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🏦</span> Financing Details</div>
+
+    <div class="field">
+      <label>Cash Available at Closing</label>
+      <div class="input-wrap has-prefix">
+        <span class="prefix">$</span>
+        <input type="number" id="cash" value="40000" min="0" step="1000" />
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Annual Interest Rate</label>
+      <div class="input-wrap has-suffix">
+        <input type="number" id="rate" value="6.75" min="0.01" max="30" step="0.01" />
+        <span class="suffix">%</span>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Loan Term</label>
+      <div class="input-wrap has-suffix">
+        <input type="number" id="term" value="30" min="1" max="40" step="1" />
+        <span class="suffix">yrs</span>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+    <div class="card-title" style="border-bottom:none;padding-bottom:0;margin-bottom:.6rem;"><span class="icon">📋</span> Closing Costs</div>
+
+    <div class="seg-ctrl">
+      <button id="btn-pct" class="active" onclick="setClosingMode('pct')">% of Loan Amount</button>
+      <button id="btn-dollar" onclick="setClosingMode('dollar')">Dollar Amount</button>
+    </div>
+
+    <div class="field" id="field-cc-pct">
+      <label>Closing Cost Rate</label>
+      <div class="input-wrap has-suffix">
+        <input type="number" id="cc_pct" value="3" min="0" max="20" step="0.1" />
+        <span class="suffix">%</span>
+      </div>
+    </div>
+
+    <div class="field" id="field-cc-dollar" style="display:none;">
+      <label>Closing Costs (fixed)</label>
+      <div class="input-wrap has-prefix">
+        <span class="prefix">$</span>
+        <input type="number" id="cc_dollar" value="8000" min="0" step="500" />
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT COLUMN: Payment Inputs -->
+  <div class="card">
+    <div class="card-title"><span class="icon">💰</span> Monthly Payment Target</div>
+
+    <div class="field">
+      <label>Desired Monthly Payment</label>
+      <div class="input-wrap has-prefix">
+        <span class="prefix">$</span>
+        <input type="number" id="payment" value="1500" min="1" step="50" />
+      </div>
+    </div>
+
+    <div class="divider"></div>
+    <div class="card-title" style="border-bottom:none;padding-bottom:0;margin-bottom:.6rem;"><span class="icon">🏠</span> Taxes &amp; Insurance</div>
+
+    <div class="toggle-row">
+      <span class="toggle-label">Include property taxes &amp; homeowner's insurance</span>
+      <label class="switch">
+        <input type="checkbox" id="include_ti" checked onchange="toggleTI()" />
+        <span class="slider"></span>
+      </label>
+    </div>
+    <p class="toggle-hint" style="font-size:.78rem;color:var(--gray);margin-bottom:1rem;">
+      When enabled, taxes and insurance are subtracted from your target payment to find the principal &amp; interest portion.
+    </p>
+
+    <div id="ti-fields">
+      <div class="seg-ctrl" style="margin-bottom:.6rem;">
+        <button id="btn-tax-pct" class="active" onclick="setTaxMode('pct')">% of Purchase Price</button>
+        <button id="btn-tax-dollar" onclick="setTaxMode('dollar')">Dollar Amount</button>
+      </div>
+
+      <div class="field" id="field-tax-pct">
+        <label>Property Tax Rate (annual)</label>
+        <div class="input-wrap has-suffix">
+          <input type="number" id="tax_rate" value="1.00" min="0" max="5" step="0.01" />
+          <span class="suffix">% of price</span>
+        </div>
+      </div>
+
+      <div class="field" id="field-tax-dollar" style="display:none;">
+        <label>Annual Property Tax</label>
+        <div class="input-wrap has-prefix">
+          <span class="prefix">$</span>
+          <input type="number" id="tax_dollar" value="2000" min="0" step="100" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Homeowner's Insurance (annual)</label>
+        <div class="input-wrap has-prefix">
+          <span class="prefix">$</span>
+          <input type="number" id="insurance" value="1200" min="0" step="100" />
+        </div>
+      </div>
+
+      <div class="divider"></div>
+      <div class="card-title" style="border-bottom:none;padding-bottom:0;margin-bottom:.4rem;font-size:.92rem;"><span class="icon">🔒</span> Private Mortgage Insurance (PMI)</div>
+      <p style="font-size:.78rem;color:var(--gray);margin-bottom:.8rem;">PMI is automatically applied when LTV exceeds 80%. Enter your expected PMI rate below.</p>
+      <div class="field">
+        <label>PMI Rate (annual, % of loan)</label>
+        <div class="input-wrap has-suffix">
+          <input type="number" id="pmi_rate" value="0.85" min="0" max="5" step="0.01" />
+          <span class="suffix">%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="results-card" id="results">
+    <div class="card-title" style="font-size:1.05rem;"><span class="icon">📊</span> Results</div>
+
+    <div class="result-hero">
+      <div class="result-stat highlight">
+        <div class="stat-label">Maximum Purchase Price</div>
+        <div class="stat-value" id="r-price">—</div>
+      </div>
+      <div class="result-stat">
+        <div class="stat-label">Loan Amount</div>
+        <div class="stat-value" id="r-loan">—</div>
+      </div>
+      <div class="result-stat">
+        <div class="stat-label">Down Payment</div>
+        <div class="stat-value" id="r-down">—</div>
+      </div>
+      <div class="result-stat">
+        <div class="stat-label">Closing Costs</div>
+        <div class="stat-value" id="r-cc">—</div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;flex-wrap:wrap;">
+
+      <!-- Monthly Payment Breakdown -->
+      <div>
+        <div class="breakdown-title">Monthly Payment Breakdown</div>
+        <table class="breakdown-table">
+          <tbody>
+            <tr>
+              <td class="label-col">Principal &amp; Interest</td>
+              <td class="val-col" id="b-pi">—</td>
+            </tr>
+            <tr id="row-tax">
+              <td class="label-col">Property Taxes</td>
+              <td class="val-col" id="b-tax">—</td>
+            </tr>
+            <tr id="row-ins">
+              <td class="label-col">Homeowner's Insurance</td>
+              <td class="val-col" id="b-ins">—</td>
+            </tr>
+            <tr id="row-pmi">
+              <td class="label-col">PMI</td>
+              <td class="val-col" id="b-pmi">—</td>
+            </tr>
+            <tr class="total-row">
+              <td class="label-col">Total Monthly Payment</td>
+              <td class="val-col" id="b-total">—</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Closing / Cash Breakdown -->
+      <div>
+        <div class="breakdown-title">Cash at Closing Breakdown</div>
+        <table class="closing-table">
+          <tbody>
+            <tr>
+              <td class="label-col">Down Payment</td>
+              <td class="val-col" id="c-down">—</td>
+            </tr>
+            <tr>
+              <td class="label-col">Closing Costs</td>
+              <td class="val-col" id="c-cc">—</td>
+            </tr>
+            <tr class="total-row">
+              <td class="label-col">Total Cash Needed</td>
+              <td class="val-col" id="c-total">—</td>
+            </tr>
+            <tr>
+              <td class="label-col" style="padding-top:.8rem;font-size:.8rem;color:var(--gray);">Cash You Entered</td>
+              <td class="val-col" id="c-avail" style="padding-top:.8rem;font-size:.8rem;color:var(--gray);">—</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="note" id="note-low-pi">
+      Your target payment doesn't leave enough for principal &amp; interest after subtracting taxes and insurance. Increase your monthly payment target or reduce taxes/insurance.
+    </div>
+    <div class="note" id="note-cash-short">
+      The required down payment and closing costs exceed your available cash. Increase your cash at closing or look for a lower-cost home.
+    </div>
+
+    <!-- Loan Summary -->
+    <div class="divider"></div>
+    <div class="breakdown-title">Loan Summary</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.8rem;margin-top:.5rem;">
+      <div class="result-stat" style="border-left-color:#9333ea;">
+        <div class="stat-label">Total Interest Paid</div>
+        <div class="stat-value" id="r-interest" style="font-size:1.15rem;">—</div>
+      </div>
+      <div class="result-stat" style="border-left-color:#9333ea;">
+        <div class="stat-label">Total Amount Paid</div>
+        <div class="stat-value" id="r-total-paid" style="font-size:1.15rem;">—</div>
+      </div>
+      <div class="result-stat" style="border-left-color:#f59e0b;">
+        <div class="stat-label">Loan-to-Value (LTV)</div>
+        <div class="stat-value" id="r-ltv" style="font-size:1.15rem;">—</div>
+      </div>
+    </div>
+    <p style="font-size:.75rem;color:var(--gray);margin-top:.8rem;">
+      * PMI is included in the monthly payment when LTV exceeds 80%. PMI is typically cancelable once LTV falls to 80%.
+    </p>
+  </div>
+
+</div>
+
+<footer>Home Affordability Calculator &mdash; for educational purposes only. Consult a licensed mortgage professional for personalized advice.</footer>
+
+<script>
+  // ---------- State ----------
+  let closingMode = 'pct'; // 'pct' | 'dollar'
+  let taxMode     = 'pct'; // 'pct' | 'dollar'
+
+  // ---------- Helpers ----------
+  const $ = id => document.getElementById(id);
+  const fmt = n => isFinite(n) ? '$' + Math.round(n).toLocaleString('en-US') : '—';
+  const fmtPct = n => isFinite(n) ? n.toFixed(1) + '%' : '—';
+
+  function getNum(id) {
+    const v = parseFloat($(id).value);
+    return isNaN(v) ? 0 : v;
+  }
+
+  // ---------- UI toggles ----------
+  function setClosingMode(mode) {
+    closingMode = mode;
+    $('btn-pct').classList.toggle('active', mode === 'pct');
+    $('btn-dollar').classList.toggle('active', mode === 'dollar');
+    $('field-cc-pct').style.display    = mode === 'pct'    ? '' : 'none';
+    $('field-cc-dollar').style.display = mode === 'dollar' ? '' : 'none';
+    calculate();
+  }
+
+  function setTaxMode(mode) {
+    taxMode = mode;
+    $('btn-tax-pct').classList.toggle('active', mode === 'pct');
+    $('btn-tax-dollar').classList.toggle('active', mode === 'dollar');
+    $('field-tax-pct').style.display    = mode === 'pct'    ? '' : 'none';
+    $('field-tax-dollar').style.display = mode === 'dollar' ? '' : 'none';
+    calculate();
+  }
+
+  function toggleTI() {
+    const on = $('include_ti').checked;
+    $('ti-fields').style.display    = on ? '' : 'none';
+    $('row-tax').style.display      = on ? '' : 'none';
+    $('row-ins').style.display      = on ? '' : 'none';
+    calculate();
+  }
+
+  // ---------- Core calculation ----------
+  // solveForLoan(pAddon) solves for the maximum loan amount given an extra
+  // monthly cost per dollar of loan (pAddon = pmiRate/12 when PMI applies, else 0).
+  // Returns { loanAmount, closingCosts, downPayment, purchasePrice, pi }
+  function solveForLoan(pAddon, cash, factor, targetPaymt, includeTI,
+                        taxRatePct, monthlyTaxFixed, monthlyIns) {
+    let loanAmount, closingCosts, downPayment, purchasePrice, pi;
+    const eff = factor + pAddon; // effective per-dollar loan cost (P&I + PMI)
+
+    if (includeTI) {
+      if (taxMode === 'pct') {
+        if (closingMode === 'pct') {
+          const ccPct = getNum('cc_pct') / 100;
+          // loanAmount*(eff + (1-ccPct)*taxRatePct/12) = payment - cash*taxRatePct/12 - ins/12
+          const denom = eff + (1 - ccPct) * taxRatePct / 12;
+          const numer = targetPaymt - (cash * taxRatePct / 12) - monthlyIns;
+          loanAmount   = denom > 0 ? numer / denom : 0;
+          closingCosts = loanAmount * ccPct;
+        } else {
+          const ccDollar = getNum('cc_dollar');
+          // loanAmount*(eff + taxRatePct/12) = payment - (cash-ccDollar)*taxRatePct/12 - ins/12
+          const denom = eff + taxRatePct / 12;
+          const numer = targetPaymt - ((cash - ccDollar) * taxRatePct / 12) - monthlyIns;
+          loanAmount   = denom > 0 ? numer / denom : 0;
+          closingCosts = ccDollar;
+        }
+      } else {
+        // Fixed dollar tax — constant, no coupling with loanAmount
+        // loanAmount * eff = payment - monthlyTaxFixed - ins/12
+        const piTarget = targetPaymt - monthlyTaxFixed - monthlyIns;
+        loanAmount   = eff > 0 ? piTarget / eff : 0;
+        closingCosts = closingMode === 'pct'
+          ? loanAmount * (getNum('cc_pct') / 100)
+          : getNum('cc_dollar');
+      }
+    } else {
+      // No taxes/insurance — full payment goes to P&I + PMI
+      // loanAmount * eff = payment
+      loanAmount   = eff > 0 ? targetPaymt / eff : 0;
+      closingCosts = closingMode === 'pct'
+        ? loanAmount * (getNum('cc_pct') / 100)
+        : getNum('cc_dollar');
+    }
+
+    downPayment   = cash - closingCosts;
+    purchasePrice = loanAmount + downPayment;
+    pi            = loanAmount * factor;
+
+    return { loanAmount, closingCosts, downPayment, purchasePrice, pi };
+  }
+
+  function calculate() {
+    const cash        = getNum('cash');
+    const annualRate  = getNum('rate') / 100;
+    const years       = getNum('term');
+    const targetPaymt = getNum('payment');
+    const includeTI   = $('include_ti').checked;
+    const taxRatePct  = getNum('tax_rate') / 100;
+    const taxDollar   = getNum('tax_dollar');
+    const annualIns   = getNum('insurance');
+    const monthlyIns  = annualIns / 12;
+    const monthlyTaxFixed = taxDollar / 12;
+    const pmiRateAnnual   = getNum('pmi_rate') / 100;
+    const pmiAddon        = pmiRateAnnual / 12; // monthly PMI per $ of loan
+
+    const r = annualRate / 12;
+    const n = years * 12;
+    const factor = (r === 0)
+      ? (n > 0 ? 1 / n : 0)
+      : (r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
+
+    const args = [cash, factor, targetPaymt, includeTI,
+                  taxRatePct, monthlyTaxFixed, monthlyIns];
+
+    // Pass 1: solve without PMI to determine initial LTV
+    let result = solveForLoan(0, ...args);
+    let ltv = result.purchasePrice > 0
+      ? (result.loanAmount / result.purchasePrice) * 100 : 0;
+
+    // Pass 2: if LTV > 80% and user provided a PMI rate, re-solve with PMI
+    let pmiApplies = false;
+    let monthlyPMI = 0;
+    if (ltv > 80 && pmiAddon > 0) {
+      const r2 = solveForLoan(pmiAddon, ...args);
+      const ltv2 = r2.purchasePrice > 0
+        ? (r2.loanAmount / r2.purchasePrice) * 100 : 0;
+      // Only use PMI solution if LTV is still above 80%
+      if (ltv2 > 80) {
+        result     = r2;
+        ltv        = ltv2;
+        pmiApplies = true;
+        monthlyPMI = result.loanAmount * pmiAddon;
+      }
+    }
+
+    const { loanAmount, closingCosts, downPayment, purchasePrice, pi } = result;
+
+    // ---- Derived values ----
+    const monthlyTax = includeTI
+      ? (taxMode === 'pct' ? purchasePrice * taxRatePct / 12 : monthlyTaxFixed)
+      : 0;
+    const totalMonthly    = pi + monthlyTax + (includeTI ? monthlyIns : 0) + monthlyPMI;
+    const totalCashNeeded = downPayment + closingCosts;
+    const totalPaid       = pi * n;
+    const totalInterest   = totalPaid - loanAmount;
+
+    // ---- Guards ----
+    const piTooLow  = pi <= 0;
+    const cashShort = totalCashNeeded > cash + 0.01;
+
+    $('note-low-pi').classList.toggle('visible', piTooLow && includeTI);
+    $('note-cash-short').classList.toggle('visible', cashShort && !piTooLow);
+
+    if (piTooLow || loanAmount <= 0) {
+      ['r-price','r-loan','r-down','r-cc','b-pi','b-tax','b-ins','b-pmi',
+       'b-total','c-down','c-cc','c-total','c-avail','r-interest','r-total-paid','r-ltv']
+        .forEach(id => $(id).textContent = '—');
+      $('row-pmi').style.display = 'none';
+      return;
+    }
+
+    // ---- Populate results ----
+    $('r-price').textContent      = fmt(purchasePrice);
+    $('r-loan').textContent       = fmt(loanAmount);
+    $('r-down').textContent       = fmt(downPayment);
+    $('r-cc').textContent         = fmt(closingCosts);
+
+    $('b-pi').textContent         = fmt(pi);
+    $('b-tax').textContent        = includeTI ? fmt(monthlyTax) : '—';
+    $('b-ins').textContent        = includeTI ? fmt(monthlyIns)  : '—';
+    $('row-pmi').style.display    = pmiApplies ? '' : 'none';
+    $('b-pmi').textContent        = pmiApplies ? fmt(monthlyPMI) : '—';
+    $('b-total').textContent      = fmt(totalMonthly);
+
+    $('c-down').textContent       = fmt(downPayment);
+    $('c-cc').textContent         = fmt(closingCosts);
+    $('c-total').textContent      = fmt(totalCashNeeded);
+    $('c-avail').textContent      = fmt(cash);
+
+    $('r-interest').textContent   = fmt(totalInterest);
+    $('r-total-paid').textContent = fmt(totalPaid);
+    $('r-ltv').textContent        = fmtPct(ltv);
+
+    // Color LTV stat
+    const ltvStat = $('r-ltv').closest('.result-stat');
+    ltvStat.classList.toggle('warn', ltv > 80);
+  }
+
+  // ---------- Wire up all inputs ----------
+  document.querySelectorAll('input[type=number], input[type=checkbox]').forEach(el => {
+    el.addEventListener('input', calculate);
+    el.addEventListener('change', calculate);
+  });
+
+  // ---------- Init ----------
+  toggleTI();
+  calculate();
+</script>
+</body>
+</html>
