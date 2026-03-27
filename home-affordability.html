@@ -396,9 +396,23 @@
         </div>
       </div>
 
-      <div class="divider"></div>
-      <div class="card-title" style="border-bottom:none;padding-bottom:0;margin-bottom:.4rem;font-size:.92rem;"><span class="icon">🔒</span> Private Mortgage Insurance (PMI)</div>
-      <p style="font-size:.78rem;color:var(--gray);margin-bottom:.8rem;">PMI is automatically applied when LTV exceeds 80%. Enter your expected PMI rate below.</p>
+    </div>
+
+    <div class="divider"></div>
+    <div class="card-title" style="border-bottom:none;padding-bottom:0;margin-bottom:.6rem;"><span class="icon">🔒</span> Private Mortgage Insurance</div>
+
+    <div class="toggle-row">
+      <span class="toggle-label">Include PMI in monthly payment</span>
+      <label class="switch">
+        <input type="checkbox" id="include_pmi" onchange="togglePMI()" />
+        <span class="slider"></span>
+      </label>
+    </div>
+    <p style="font-size:.78rem;color:var(--gray);margin-bottom:1rem;">
+      Typically required when LTV exceeds 80%. PMI is subtracted from your target payment along with any other selected costs.
+    </p>
+
+    <div id="pmi-fields" style="display:none;">
       <div class="field">
         <label>PMI Rate (annual, % of loan)</label>
         <div class="input-wrap has-suffix">
@@ -564,6 +578,13 @@
     calculate();
   }
 
+  function togglePMI() {
+    const on = $('include_pmi').checked;
+    $('pmi-fields').style.display = on ? '' : 'none';
+    $('row-pmi').style.display    = on ? '' : 'none';
+    calculate();
+  }
+
   // ---------- Core calculation ----------
   // solveForLoan(pAddon) solves for the maximum loan amount given an extra
   // monthly cost per dollar of loan (pAddon = pmiRate/12 when PMI applies, else 0).
@@ -626,8 +647,9 @@
     const annualIns   = getNum('insurance');
     const monthlyIns  = annualIns / 12;
     const monthlyTaxFixed = taxDollar / 12;
+    const includePMI      = $('include_pmi').checked;
     const pmiRateAnnual   = getNum('pmi_rate') / 100;
-    const pmiAddon        = pmiRateAnnual / 12; // monthly PMI per $ of loan
+    const pmiAddon        = includePMI ? pmiRateAnnual / 12 : 0;
 
     const r = annualRate / 12;
     const n = years * 12;
@@ -638,26 +660,10 @@
     const args = [cash, factor, targetPaymt, includeTI,
                   taxRatePct, monthlyTaxFixed, monthlyIns];
 
-    // Pass 1: solve without PMI to determine initial LTV
-    let result = solveForLoan(0, ...args);
-    let ltv = result.purchasePrice > 0
+    const result = solveForLoan(pmiAddon, ...args);
+    const ltv = result.purchasePrice > 0
       ? (result.loanAmount / result.purchasePrice) * 100 : 0;
-
-    // Pass 2: if LTV > 80% and user provided a PMI rate, re-solve with PMI
-    let pmiApplies = false;
-    let monthlyPMI = 0;
-    if (ltv > 80 && pmiAddon > 0) {
-      const r2 = solveForLoan(pmiAddon, ...args);
-      const ltv2 = r2.purchasePrice > 0
-        ? (r2.loanAmount / r2.purchasePrice) * 100 : 0;
-      // Only use PMI solution if LTV is still above 80%
-      if (ltv2 > 80) {
-        result     = r2;
-        ltv        = ltv2;
-        pmiApplies = true;
-        monthlyPMI = result.loanAmount * pmiAddon;
-      }
-    }
+    const monthlyPMI = includePMI ? result.loanAmount * pmiAddon : 0;
 
     const { loanAmount, closingCosts, downPayment, purchasePrice, pi } = result;
 
@@ -681,7 +687,7 @@
       ['r-price','r-loan','r-down','r-cc','b-pi','b-tax','b-ins','b-pmi',
        'b-total','c-down','c-cc','c-total','c-avail','r-interest','r-total-paid','r-ltv']
         .forEach(id => $(id).textContent = '—');
-      $('row-pmi').style.display = 'none';
+      $('row-pmi').style.display = includePMI ? '' : 'none';
       return;
     }
 
@@ -694,8 +700,8 @@
     $('b-pi').textContent         = fmt(pi);
     $('b-tax').textContent        = includeTI ? fmt(monthlyTax) : '—';
     $('b-ins').textContent        = includeTI ? fmt(monthlyIns)  : '—';
-    $('row-pmi').style.display    = pmiApplies ? '' : 'none';
-    $('b-pmi').textContent        = pmiApplies ? fmt(monthlyPMI) : '—';
+    $('row-pmi').style.display    = includePMI ? '' : 'none';
+    $('b-pmi').textContent        = includePMI ? fmt(monthlyPMI) : '—';
     $('b-total').textContent      = fmt(totalMonthly);
 
     $('c-down').textContent       = fmt(downPayment);
@@ -720,6 +726,7 @@
 
   // ---------- Init ----------
   toggleTI();
+  togglePMI();
   calculate();
 </script>
 </body>
