@@ -345,11 +345,45 @@
     <div class="card-title"><span class="icon">💰</span> Monthly Payment Target</div>
 
     <div class="field">
+      <label>Monthly Gross Income</label>
+      <div class="input-wrap has-prefix">
+        <span class="prefix">$</span>
+        <input type="number" id="gross_income" value="6000" min="0" step="100" />
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Other Monthly Debt Payments</label>
+      <div class="input-wrap has-prefix">
+        <span class="prefix">$</span>
+        <input type="number" id="other_debts" value="0" min="0" step="50" />
+      </div>
+      <div style="font-size:.78rem;color:var(--gray);margin-top:.35rem;line-height:1.5;">
+        Include: car loans, student loans, credit card minimums, personal loans, child support, alimony.<br>
+        <strong>Do not include</strong> utilities, groceries, subscriptions, or the proposed mortgage payment.
+      </div>
+    </div>
+
+    <div class="seg-ctrl" style="margin-bottom:.6rem;">
+      <button id="btn-pay-dollar" class="active" onclick="setPaymentMode('dollar')">Dollar Amount</button>
+      <button id="btn-pay-pct" onclick="setPaymentMode('pct')">% of Gross Income</button>
+    </div>
+
+    <div class="field" id="field-pay-dollar">
       <label>Desired Monthly Payment</label>
       <div class="input-wrap has-prefix">
         <span class="prefix">$</span>
         <input type="number" id="payment" value="1500" min="1" step="50" />
       </div>
+    </div>
+
+    <div class="field" id="field-pay-pct" style="display:none;">
+      <label>Desired Monthly Payment</label>
+      <div class="input-wrap has-suffix">
+        <input type="number" id="payment_pct" value="25" min="0.1" max="100" step="0.5" />
+        <span class="suffix">% of income</span>
+      </div>
+      <div id="pay-pct-hint" style="font-size:.78rem;color:var(--gray);margin-top:.3rem;"></div>
     </div>
 
     <div class="divider"></div>
@@ -526,9 +560,21 @@
         <div class="stat-label">Loan-to-Value (LTV)</div>
         <div class="stat-value" id="r-ltv" style="font-size:1.15rem;">—</div>
       </div>
+      <div class="result-stat" id="stat-dti" style="border-left-color:#16a34a;">
+        <div class="stat-label">Front-End DTI</div>
+        <div class="stat-value" id="r-dti" style="font-size:1.15rem;">—</div>
+        <div style="font-size:.72rem;color:var(--gray);margin-top:.25rem;">housing payment ÷ gross income</div>
+      </div>
+      <div class="result-stat" id="stat-bdti" style="border-left-color:#16a34a;">
+        <div class="stat-label">Back-End DTI</div>
+        <div class="stat-value" id="r-bdti" style="font-size:1.15rem;">—</div>
+        <div style="font-size:.72rem;color:var(--gray);margin-top:.25rem;">(housing + all debts) ÷ gross income</div>
+      </div>
     </div>
     <p style="font-size:.75rem;color:var(--gray);margin-top:.8rem;">
-      * PMI is included in the monthly payment when LTV exceeds 80%. PMI is typically cancelable once LTV falls to 80%.
+      * PMI is included in the monthly payment when LTV exceeds 80%. PMI is typically cancelable once LTV falls to 80%.<br>
+      <strong>Front-end DTI guidelines:</strong> ≤28% excellent (conventional), ≤31% acceptable (FHA).<br>
+      <strong>Back-end DTI guidelines:</strong> ≤36% excellent, ≤43% typically approved (FHA standard / conventional with good credit), ≤45% possible with compensating factors, ≤50% FHA with strong compensating factors, &gt;50% unlikely to qualify.
     </p>
   </div>
 
@@ -538,8 +584,9 @@
 
 <script>
   // ---------- State ----------
-  let closingMode = 'pct'; // 'pct' | 'dollar'
-  let taxMode     = 'pct'; // 'pct' | 'dollar'
+  let closingMode  = 'pct';    // 'pct' | 'dollar'
+  let taxMode      = 'pct';    // 'pct' | 'dollar'
+  let paymentMode  = 'dollar'; // 'dollar' | 'pct'
 
   // ---------- Helpers ----------
   const $ = id => document.getElementById(id);
@@ -567,6 +614,15 @@
     $('btn-tax-dollar').classList.toggle('active', mode === 'dollar');
     $('field-tax-pct').style.display    = mode === 'pct'    ? '' : 'none';
     $('field-tax-dollar').style.display = mode === 'dollar' ? '' : 'none';
+    calculate();
+  }
+
+  function setPaymentMode(mode) {
+    paymentMode = mode;
+    $('btn-pay-dollar').classList.toggle('active', mode === 'dollar');
+    $('btn-pay-pct').classList.toggle('active', mode === 'pct');
+    $('field-pay-dollar').style.display = mode === 'dollar' ? '' : 'none';
+    $('field-pay-pct').style.display    = mode === 'pct'    ? '' : 'none';
     calculate();
   }
 
@@ -637,10 +693,22 @@
   }
 
   function calculate() {
-    const cash        = getNum('cash');
-    const annualRate  = getNum('rate') / 100;
-    const years       = getNum('term');
-    const targetPaymt = getNum('payment');
+    const cash       = getNum('cash');
+    const annualRate = getNum('rate') / 100;
+    const years      = getNum('term');
+    const grossIncome = getNum('gross_income');
+
+    let targetPaymt;
+    if (paymentMode === 'pct') {
+      const pct = getNum('payment_pct');
+      targetPaymt = grossIncome * pct / 100;
+      const hint = $('pay-pct-hint');
+      hint.textContent = grossIncome > 0
+        ? '= ' + fmt(targetPaymt) + ' / month'
+        : 'Enter gross income above to calculate';
+    } else {
+      targetPaymt = getNum('payment');
+    }
     const includeTI   = $('include_ti').checked;
     const taxRatePct  = getNum('tax_rate') / 100;
     const taxDollar   = getNum('tax_dollar');
@@ -685,7 +753,7 @@
 
     if (piTooLow || loanAmount <= 0) {
       ['r-price','r-loan','r-down','r-cc','b-pi','b-tax','b-ins','b-pmi',
-       'b-total','c-down','c-cc','c-total','c-avail','r-interest','r-total-paid','r-ltv']
+       'b-total','c-down','c-cc','c-total','c-avail','r-interest','r-total-paid','r-ltv','r-dti','r-bdti']
         .forEach(id => $(id).textContent = '—');
       $('row-pmi').style.display = includePMI ? '' : 'none';
       return;
@@ -716,6 +784,37 @@
     // Color LTV stat
     const ltvStat = $('r-ltv').closest('.result-stat');
     ltvStat.classList.toggle('warn', ltv > 80);
+
+    // ---- Front-end DTI ----
+    const dtiStat = $('stat-dti');
+    if (grossIncome > 0) {
+      const dti = (totalMonthly / grossIncome) * 100;
+      $('r-dti').textContent = fmtPct(dti);
+      dtiStat.style.borderLeftColor = dti <= 28 ? 'var(--green)' : dti <= 31 ? '#f59e0b' : 'var(--red)';
+      dtiStat.style.background      = dti <= 28 ? '#f0fdf4'      : dti <= 31 ? '#fffbeb' : '#fff1f2';
+      $('r-dti').style.color        = dti <= 28 ? 'var(--green)'  : dti <= 31 ? '#b45309' : 'var(--red)';
+    } else {
+      $('r-dti').textContent = '—';
+      dtiStat.style.borderLeftColor = '#f59e0b';
+      dtiStat.style.background      = '';
+      $('r-dti').style.color        = '';
+    }
+
+    // ---- Back-end DTI ----
+    const otherDebts = getNum('other_debts');
+    const bdtiStat = $('stat-bdti');
+    if (grossIncome > 0) {
+      const bdti = ((totalMonthly + otherDebts) / grossIncome) * 100;
+      $('r-bdti').textContent = fmtPct(bdti);
+      bdtiStat.style.borderLeftColor = bdti <= 36 ? 'var(--green)' : bdti <= 43 ? '#f59e0b' : 'var(--red)';
+      bdtiStat.style.background      = bdti <= 36 ? '#f0fdf4'      : bdti <= 43 ? '#fffbeb' : '#fff1f2';
+      $('r-bdti').style.color        = bdti <= 36 ? 'var(--green)'  : bdti <= 43 ? '#b45309' : 'var(--red)';
+    } else {
+      $('r-bdti').textContent = '—';
+      bdtiStat.style.borderLeftColor = '#f59e0b';
+      bdtiStat.style.background      = '';
+      $('r-bdti').style.color        = '';
+    }
   }
 
   // ---------- Wire up all inputs ----------
