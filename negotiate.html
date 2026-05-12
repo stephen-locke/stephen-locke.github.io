@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Price vs. Closing Costs Negotiation Calculator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:    #1a2744;
+      --red:     #b5112c;
+      --light:   #f5f7fa;
+      --white:   #ffffff;
+      --gray:    #6b7280;
+      --border:  #e5e7eb;
+      --text:    #1f2937;
+      --accent:  #2563eb;
+      --green:   #16a34a;
+      --amber:   #d97706;
+      --font-sans: 'Inter', system-ui, sans-serif;
+      --font-serif: 'Lora', Georgia, serif;
+      --radius: 10px;
+      --shadow: 0 2px 12px rgba(0,0,0,.08);
+      --shadow-lg: 0 8px 32px rgba(0,0,0,.14);
+    }
+
+    html { scroll-behavior: smooth; font-size: 16px; }
+    body { font-family: var(--font-sans); background: var(--light); color: var(--text); min-height: 100vh; }
+
+    /* ── Header ── */
+    .site-header {
+      background: var(--navy);
+      color: #fff;
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .site-header a { color: #cdd5e0; text-decoration: none; font-size: .85rem; }
+    .site-header a:hover { color: #fff; }
+    .site-header h1 {
+      font-family: var(--font-serif);
+      font-size: 1.35rem;
+      font-weight: 700;
+      letter-spacing: .01em;
+    }
+    .header-sep { color: #4a5568; }
+
+    /* ── Page container ── */
+    .page { max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+    .page-title {
+      font-family: var(--font-serif);
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: .4rem;
+    }
+    .page-subtitle { color: var(--gray); font-size: .95rem; margin-bottom: 2rem; }
+
+    /* ── Cards ── */
+    .card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+    }
+    .card-title {
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--navy);
+      margin-bottom: 1.25rem;
+      padding-bottom: .6rem;
+      border-bottom: 2px solid var(--light);
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      font-size: .8rem;
+    }
+
+    /* ── Layout grids ── */
+    .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 1.25rem; }
+    .input-grid.three { grid-template-columns: 1fr 1fr 1fr; }
+    .full { grid-column: 1 / -1; }
+
+    @media (max-width: 640px) {
+      .input-grid, .input-grid.three { grid-template-columns: 1fr; }
+    }
+
+    /* ── Form controls ── */
+    .field label {
+      display: block;
+      font-size: .8rem;
+      font-weight: 600;
+      color: var(--gray);
+      margin-bottom: .35rem;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+    .input-wrap { position: relative; display: flex; align-items: center; }
+    .input-wrap .prefix,
+    .input-wrap .suffix {
+      position: absolute;
+      font-size: .95rem;
+      color: var(--gray);
+      pointer-events: none;
+      font-weight: 500;
+    }
+    .input-wrap .prefix { left: .75rem; }
+    .input-wrap .suffix { right: .75rem; }
+    .input-wrap input { width: 100%; }
+
+    input[type="number"], input[type="text"], select {
+      width: 100%;
+      padding: .6rem .85rem;
+      border: 1.5px solid var(--border);
+      border-radius: 7px;
+      font-size: .95rem;
+      font-family: var(--font-sans);
+      color: var(--text);
+      background: var(--white);
+      transition: border-color .15s;
+      -moz-appearance: textfield;
+    }
+    input.has-prefix { padding-left: 2.25rem; }
+    input.has-suffix { padding-right: 2rem; }
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
+    input:focus, select:focus { outline: none; border-color: var(--accent); }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      margin-top: .2rem;
+    }
+    .toggle-row label { margin: 0; text-transform: none; letter-spacing: 0; font-size: .85rem; color: var(--text); font-weight: 500; }
+    .toggle-row input[type="radio"] { accent-color: var(--accent); }
+
+    /* ── Results layout ── */
+    .results-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+    @media (max-width: 760px) { .results-grid { grid-template-columns: 1fr; } }
+
+    .result-card {
+      background: var(--white);
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      box-shadow: var(--shadow);
+      transition: border-color .2s;
+      position: relative;
+    }
+    .result-card.winner {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(22,163,74,.12), var(--shadow-lg);
+    }
+    .result-card.loser { opacity: .75; }
+
+    .result-label {
+      font-size: .7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--gray);
+      margin-bottom: .4rem;
+    }
+    .result-scenario {
+      font-family: var(--font-serif);
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 1rem;
+    }
+
+    .badge {
+      display: inline-block;
+      font-size: .7rem;
+      font-weight: 700;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      padding: .2rem .6rem;
+      border-radius: 99px;
+      margin-bottom: .75rem;
+    }
+    .badge.winner { background: #dcfce7; color: #15803d; }
+    .badge.loser  { background: #fee2e2; color: #b91c1c; }
+    .badge.neutral { background: #e0e7ff; color: #3730a3; }
+    .badge.hidden { visibility: hidden; }
+
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      font-size: .88rem;
+      padding: .35rem 0;
+      border-bottom: 1px solid var(--light);
+      gap: .5rem;
+    }
+    .stat-row:last-child { border-bottom: none; }
+    .stat-row .stat-label { color: var(--gray); flex: 1; }
+    .stat-row .stat-value { font-weight: 600; color: var(--text); white-space: nowrap; }
+    .stat-row.highlight .stat-value { color: var(--navy); font-size: 1.05rem; }
+    .stat-row.total {
+      margin-top: .4rem;
+      padding-top: .5rem;
+      border-top: 2px solid var(--border);
+      font-weight: 700;
+    }
+    .stat-row.total .stat-label { color: var(--navy); }
+    .stat-row.total .stat-value { font-size: 1.1rem; }
+    .winner .stat-row.total .stat-value { color: var(--green); }
+
+    /* ── Verdict banner ── */
+    .verdict {
+      background: var(--navy);
+      color: #fff;
+      border-radius: var(--radius);
+      padding: 1.25rem 1.5rem;
+      margin-top: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      font-size: 1rem;
+    }
+    .verdict-icon { font-size: 2rem; flex-shrink: 0; }
+    .verdict-text strong { display: block; font-size: 1.1rem; margin-bottom: .2rem; }
+    .verdict-text span { font-size: .88rem; color: #cdd5e0; }
+
+    /* ── Savings detail ── */
+    .savings-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+    @media (max-width: 640px) { .savings-row { grid-template-columns: 1fr; } }
+
+    .savings-box {
+      background: var(--light);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+    }
+    .savings-box .savings-label { font-size: .75rem; color: var(--gray); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; margin-bottom: .25rem; }
+    .savings-box .savings-val { font-size: 1.4rem; font-weight: 800; color: var(--navy); }
+    .savings-box.green .savings-val { color: var(--green); }
+    .savings-box.red   .savings-val { color: var(--red); }
+
+    /* ── Amortization table ── */
+    details { margin-top: 1.5rem; }
+    summary {
+      cursor: pointer;
+      font-weight: 600;
+      font-size: .9rem;
+      color: var(--accent);
+      padding: .5rem 0;
+      user-select: none;
+    }
+    summary:hover { color: var(--navy); }
+    .amort-wrap { overflow-x: auto; margin-top: .75rem; }
+    table { width: 100%; border-collapse: collapse; font-size: .82rem; }
+    th {
+      background: var(--navy);
+      color: #fff;
+      padding: .5rem .75rem;
+      text-align: right;
+      font-weight: 600;
+      letter-spacing: .02em;
+    }
+    th:first-child { text-align: left; }
+    td { padding: .45rem .75rem; text-align: right; border-bottom: 1px solid var(--border); }
+    td:first-child { text-align: left; font-weight: 600; }
+    tr:nth-child(even) td { background: var(--light); }
+
+    /* ── Slider ── */
+    .slider-wrap { margin-top: .4rem; }
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+    .slider-labels { display: flex; justify-content: space-between; font-size: .75rem; color: var(--gray); margin-top: .15rem; }
+
+    /* ── Sections spacing ── */
+    .section { margin-bottom: 1.25rem; }
+  </style>
+</head>
+<body>
+
+<header class="site-header">
+  <a href="index.html">Home</a>
+  <span class="header-sep">/</span>
+  <h1>Negotiate Price or Closing Costs?</h1>
+</header>
+
+<div class="page">
+  <p class="page-title">Price Reduction vs. Seller-Paid Closing Costs</p>
+  <p class="page-subtitle">Compare the true long-term cost of each negotiation strategy over your planned holding period.</p>
+
+  <!-- ── Inputs ── -->
+  <div class="card section">
+    <div class="card-title">Loan Details</div>
+    <div class="input-grid three">
+      <div class="field">
+        <label>Asking Price</label>
+        <div class="input-wrap">
+          <span class="prefix">$</span>
+          <input type="number" id="askingPrice" class="has-prefix" value="350000" min="0" step="1000" />
+        </div>
+      </div>
+      <div class="field">
+        <label>Down Payment</label>
+        <div class="input-wrap">
+          <input type="number" id="downPct" class="has-suffix" value="20" min="0" max="99" step="0.5" />
+          <span class="suffix">%</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>Down Payment ($)</label>
+        <div class="input-wrap">
+          <span class="prefix">$</span>
+          <input type="number" id="downAmt" class="has-prefix" value="70000" min="0" step="1000" readonly style="background:#f9fafb;color:var(--gray);" />
+        </div>
+      </div>
+      <div class="field">
+        <label>Interest Rate</label>
+        <div class="input-wrap">
+          <input type="number" id="rate" class="has-suffix" value="6.75" min="0.1" max="25" step="0.125" />
+          <span class="suffix">%</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>Loan Term</label>
+        <div class="input-wrap">
+          <input type="number" id="term" class="has-suffix" value="30" min="1" max="40" step="1" />
+          <span class="suffix">yrs</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>Years Until You Sell</label>
+        <div class="input-wrap">
+          <input type="number" id="holdYears" class="has-suffix" value="7" min="1" max="40" step="1" />
+          <span class="suffix">yrs</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-title" style="margin-top:1rem;">Closing Costs</div>
+    <div class="input-grid">
+      <div class="field">
+        <label>Closing Cost Type</label>
+        <div class="toggle-row">
+          <input type="radio" name="ccType" id="ccFixed" value="fixed" checked />
+          <label for="ccFixed">Fixed amount ($)</label>
+          <input type="radio" name="ccType" id="ccPct" value="pct" style="margin-left:.75rem;" />
+          <label for="ccPct">% of loan</label>
+        </div>
+      </div>
+      <div class="field">
+        <label id="ccLabel">Closing Costs ($)</label>
+        <div class="input-wrap">
+          <span class="prefix" id="ccPrefix">$</span>
+          <input type="number" id="closingCosts" class="has-prefix" value="8500" min="0" step="100" />
+          <span class="suffix" id="ccSuffix" style="display:none;">%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Negotiation ── -->
+  <div class="card section">
+    <div class="card-title">Negotiation Amount</div>
+    <p style="font-size:.88rem;color:var(--gray);margin-bottom:1rem;">
+      How much value are you asking for? This amount will be applied as either a <strong>price reduction</strong> or a <strong>seller credit toward closing costs</strong>.
+    </p>
+    <div class="input-grid">
+      <div class="field">
+        <label>Negotiation Amount</label>
+        <div class="input-wrap">
+          <span class="prefix">$</span>
+          <input type="number" id="negotiation" class="has-prefix" value="8500" min="0" step="500" />
+        </div>
+        <div class="slider-wrap">
+          <input type="range" id="negotiationSlider" min="0" max="50000" step="500" value="8500" />
+          <div class="slider-labels"><span>$0</span><span id="sliderMax">$50,000</span></div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Effective Negotiation</label>
+        <div id="negotiationInfo" style="font-size:.88rem;color:var(--gray);line-height:1.6;padding-top:.4rem;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Results ── -->
+  <div id="results"></div>
+</div>
+
+<script>
+  // ── Helpers ──────────────────────────────────────────────
+  const $ = id => document.getElementById(id);
+  const fmt = (n, dec=0) => n == null ? '—' : '$' + n.toLocaleString('en-US', {minimumFractionDigits:dec, maximumFractionDigits:dec});
+  const fmtPct = n => (n * 100).toFixed(2) + '%';
+
+  function monthlyPayment(principal, annualRate, termYears) {
+    if (principal <= 0) return 0;
+    const r = annualRate / 100 / 12;
+    const n = termYears * 12;
+    if (r === 0) return principal / n;
+    return principal * r * Math.pow(1+r, n) / (Math.pow(1+r, n) - 1);
+  }
+
+  // Returns {interestPaid, principalPaid, balance} after holdMonths
+  function amortize(principal, annualRate, termYears, holdMonths) {
+    const r = annualRate / 100 / 12;
+    const n = termYears * 12;
+    const pmt = monthlyPayment(principal, annualRate, termYears);
+    holdMonths = Math.min(holdMonths, n);
+
+    if (r === 0) {
+      const principalPaid = pmt * holdMonths;
+      return { interestPaid: 0, principalPaid, balance: principal - principalPaid, pmt };
+    }
+
+    // Balance after k payments formula: P*(1+r)^k - pmt*((1+r)^k - 1)/r
+    const k = holdMonths;
+    const growth = Math.pow(1+r, k);
+    const balance = principal * growth - pmt * (growth - 1) / r;
+    const totalPaid = pmt * k;
+    const principalPaid = principal - balance;
+    const interestPaid = totalPaid - principalPaid;
+    return { interestPaid: Math.max(0, interestPaid), principalPaid: Math.max(0, principalPaid), balance: Math.max(0, balance), pmt };
+  }
+
+  // Annual amortization table rows
+  function annualTable(principal, annualRate, termYears, holdYears) {
+    const r = annualRate / 100 / 12;
+    const pmt = monthlyPayment(principal, annualRate, termYears);
+    const rows = [];
+    let balance = principal;
+    let cumInterest = 0;
+    let cumPrincipal = 0;
+
+    for (let yr = 1; yr <= Math.min(holdYears, termYears); yr++) {
+      let yearInterest = 0, yearPrincipal = 0;
+      for (let m = 0; m < 12; m++) {
+        if (balance <= 0) break;
+        const int = balance * r;
+        const prin = Math.min(pmt - int, balance);
+        yearInterest += int;
+        yearPrincipal += prin;
+        balance -= prin;
+      }
+      cumInterest += yearInterest;
+      cumPrincipal += yearPrincipal;
+      rows.push({ yr, yearInterest, yearPrincipal, cumInterest, cumPrincipal, balance: Math.max(0, balance) });
+    }
+    return rows;
+  }
+
+  // ── Sync down payment inputs ──────────────────────────────
+  let _syncing = false;
+  $('askingPrice').addEventListener('input', () => {
+    if (_syncing) return; _syncing = true;
+    const pct = +$('downPct').value;
+    $('downAmt').value = Math.round(+$('askingPrice').value * pct / 100);
+    _syncing = false; calculate();
+  });
+  $('downPct').addEventListener('input', () => {
+    if (_syncing) return; _syncing = true;
+    $('downAmt').value = Math.round(+$('askingPrice').value * +$('downPct').value / 100);
+    _syncing = false; calculate();
+  });
+
+  // Sync negotiation slider
+  $('negotiation').addEventListener('input', () => {
+    $('negotiationSlider').value = $('negotiation').value;
+    calculate();
+  });
+  $('negotiationSlider').addEventListener('input', () => {
+    $('negotiation').value = $('negotiationSlider').value;
+    calculate();
+  });
+
+  // Closing cost type toggle
+  document.querySelectorAll('input[name="ccType"]').forEach(r => r.addEventListener('change', () => {
+    const isPct = $('ccPct').checked;
+    $('ccLabel').textContent = isPct ? 'Closing Costs (% of loan)' : 'Closing Costs ($)';
+    $('ccPrefix').style.display = isPct ? 'none' : '';
+    $('ccSuffix').style.display = isPct ? '' : 'none';
+    $('closingCosts').value = isPct ? '2.5' : '8500';
+    $('closingCosts').step = isPct ? '0.1' : '100';
+    calculate();
+  }));
+
+  // All other inputs
+  ['rate','term','holdYears','closingCosts'].forEach(id => $(id).addEventListener('input', calculate));
+
+  // ── Main calculation ─────────────────────────────────────
+  function calculate() {
+    const asking    = +$('askingPrice').value || 0;
+    const downPct   = +$('downPct').value / 100;
+    const rate      = +$('rate').value || 0;
+    const term      = +$('term').value || 30;
+    const holdYrs   = Math.min(+$('holdYears').value || 7, term);
+    const negAmt    = +$('negotiation').value || 0;
+    const isPct     = $('ccPct').checked;
+    const ccInput   = +$('closingCosts').value || 0;
+
+    // Update slider max
+    const sliderMax = Math.round(asking * 0.15 / 500) * 500 || 50000;
+    $('negotiationSlider').max = sliderMax;
+    $('sliderMax').textContent = fmt(sliderMax);
+
+    // Base loan
+    const downAmt = asking * downPct;
+    const baseLoan = asking - downAmt;
+    const baseCcDollars = isPct ? baseLoan * (ccInput / 100) : ccInput;
+
+    // Scenario A — Baseline (no negotiation)
+    const baseA = buildScenario('Baseline', asking, downAmt, baseLoan, baseCcDollars, rate, term, holdYrs, 0, 0);
+
+    // Scenario B — Price reduction
+    const discountPrice = Math.max(0, asking - negAmt);
+    const discountDown  = discountPrice * downPct;
+    const discountLoan  = discountPrice - discountDown;
+    const discountCC    = isPct ? discountLoan * (ccInput / 100) : ccInput;
+    const baseB = buildScenario('Price Reduction', discountPrice, discountDown, discountLoan, discountCC, rate, term, holdYrs, negAmt, 0);
+
+    // Scenario C — Seller pays closing costs
+    // Price stays at asking; seller credits min(negAmt, closingCosts) toward CC
+    const creditAmt   = Math.min(negAmt, baseCcDollars);
+    const buyerCC     = baseCcDollars - creditAmt;
+    const baseC = buildScenario('Seller Credit', asking, downAmt, baseLoan, buyerCC, rate, term, holdYrs, 0, creditAmt);
+
+    // Determine winner between B and C (not baseline)
+    const totalB = baseB.totalCost;
+    const totalC = baseC.totalCost;
+    const bWins  = totalB < totalC;
+    const cWins  = totalC < totalB;
+    const tie    = totalB === totalC;
+
+    // Negotiation info panel
+    $('negotiationInfo').innerHTML =
+      `<b>Price reduction:</b> ${fmt(asking)} → ${fmt(discountPrice)} <br>` +
+      `<b>Seller credit:</b> covers ${fmt(creditAmt)} of ${fmt(baseCcDollars)} closing costs<br>` +
+      `<span style="color:var(--gray);font-size:.8rem;">Buyer still pays ${fmt(buyerCC)} in closing costs under credit scenario</span>`;
+
+    // Render
+    $('results').innerHTML = renderResults(baseA, baseB, baseC, bWins, cWins, tie, holdYrs, baseCcDollars, isPct, ccInput);
+
+    // Attach table toggles (re-render clears them)
+    attachTables(baseLoan, discountLoan, rate, term, holdYrs);
+  }
+
+  function buildScenario(name, price, downAmt, loan, ccBuyer, rate, term, holdYrs, priceDiscount, ccCredit) {
+    const holdMonths = holdYrs * 12;
+    const { interestPaid, pmt, balance } = amortize(loan, rate, term, holdMonths);
+    const totalCost = ccBuyer + interestPaid;
+    return { name, price, downAmt, loan, ccBuyer, priceDiscount, ccCredit, pmt, interestPaid, balance, totalCost, holdYrs };
+  }
+
+  function renderResults(base, B, C, bWins, cWins, tie, holdYrs, baseCcDollars, isPct, ccInput) {
+    const savings = Math.abs(B.totalCost - C.totalCost);
+    const winner  = bWins ? B : (cWins ? C : null);
+
+    // Verdict message
+    let verdictIcon, verdictTitle, verdictDetail;
+    if (tie) {
+      verdictIcon  = '⚖️';
+      verdictTitle = 'It\'s a tie — both strategies are equivalent.';
+      verdictDetail = 'The negotiation amount exactly equals the closing costs. Either approach yields the same total out-of-pocket cost.';
+    } else if (bWins) {
+      verdictIcon  = '🏷️';
+      verdictTitle = `Negotiate a lower price — saves you ${fmt(savings)} over ${holdYrs} years.`;
+      verdictDetail = `A price reduction reduces your loan balance and monthly payment, saving more interest than the seller credit covers in closing costs.`;
+    } else {
+      verdictIcon  = '🤝';
+      verdictTitle = `Ask the seller to pay closing costs — saves you ${fmt(savings)} over ${holdYrs} years.`;
+      verdictDetail = `Keeping more cash in your pocket today outweighs the extra interest on the unchanged loan balance during your ${holdYrs}-year holding period.`;
+    }
+
+    const ccTypeNote = isPct ? `${ccInput}% of loan` : `fixed amount`;
+
+    return `
+      <div class="results-grid">
+        ${scenarioCard(base, false, false, 'Baseline', 'Your starting point with no negotiation', 'neutral', base.holdYrs)}
+        ${scenarioCard(B, bWins, !bWins && !tie, 'Option A', 'Seller reduces the purchase price', bWins?'winner':(tie?'neutral':'loser'), B.holdYrs)}
+        ${scenarioCard(C, cWins, !cWins && !tie, 'Option B', 'Seller pays part/all of your closing costs', cWins?'winner':(tie?'neutral':'loser'), C.holdYrs)}
+      </div>
+
+      <div class="verdict">
+        <div class="verdict-icon">${verdictIcon}</div>
+        <div class="verdict-text">
+          <strong>${verdictTitle}</strong>
+          <span>${verdictDetail}</span>
+        </div>
+      </div>
+
+      <div class="savings-row">
+        <div class="savings-box">
+          <div class="savings-label">Monthly Payment Difference (A vs B)</div>
+          <div class="savings-val">${fmt(Math.abs(B.pmt - C.pmt), 2)}/mo</div>
+        </div>
+        <div class="savings-box ${bWins?'green':cWins?'red':''}">
+          <div class="savings-label">Total Cost Advantage (${bWins?'Price Reduction':cWins?'Seller Credit':'Tied'})</div>
+          <div class="savings-val">${tie ? 'None' : fmt(savings)}</div>
+        </div>
+        <div class="savings-box">
+          <div class="savings-label">Closing Costs (${ccTypeNote})</div>
+          <div class="savings-val">${fmt(baseCcDollars)}</div>
+        </div>
+        <div class="savings-box">
+          <div class="savings-label">Seller Credit Covers</div>
+          <div class="savings-val">${fmt(Math.min(C.ccCredit, baseCcDollars))} of ${fmt(baseCcDollars)}</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:1.5rem;">
+        <details id="detailsBase">
+          <summary>Baseline — Annual Amortization (${base.loan > 0 ? fmt(base.loan) : '—'} loan)</summary>
+          <div class="amort-wrap" id="tableBase"></div>
+        </details>
+        <details id="detailsB" style="margin-top:.5rem;">
+          <summary>Option A (Price Reduction) — Annual Amortization (${fmt(B.loan)} loan)</summary>
+          <div class="amort-wrap" id="tableB"></div>
+        </details>
+        <details id="detailsC" style="margin-top:.5rem;">
+          <summary>Option B (Seller Credit) — Annual Amortization (${fmt(C.loan)} loan)</summary>
+          <div class="amort-wrap" id="tableC"></div>
+        </details>
+      </div>
+    `;
+  }
+
+  function scenarioCard(s, isWinner, isLoser, label, desc, badgeType, holdYrs) {
+    const badgeText = isWinner ? 'Best Option' : isLoser ? 'Higher Cost' : 'Reference';
+    return `
+      <div class="result-card ${isWinner?'winner':isLoser?'loser':''}">
+        <div class="result-label">${label}</div>
+        <div class="result-scenario">${s.name}</div>
+        <span class="badge ${badgeType}">${badgeText}</span>
+        <div class="stat-row">
+          <span class="stat-label">Purchase Price</span>
+          <span class="stat-value">${fmt(s.price)}</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Loan Amount</span>
+          <span class="stat-value">${fmt(s.loan)}</span>
+        </div>
+        <div class="stat-row highlight">
+          <span class="stat-label">Monthly Payment</span>
+          <span class="stat-value">${fmt(s.pmt, 2)}/mo</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Out-of-Pocket Closing Costs</span>
+          <span class="stat-value">${fmt(s.ccBuyer)}</span>
+        </div>
+        ${s.ccCredit > 0 ? `<div class="stat-row"><span class="stat-label" style="color:var(--green);">Seller Credit</span><span class="stat-value" style="color:var(--green);">−${fmt(s.ccCredit)}</span></div>` : ''}
+        <div class="stat-row">
+          <span class="stat-label">Interest Paid (${holdYrs} yrs)</span>
+          <span class="stat-value">${fmt(s.interestPaid)}</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Remaining Balance</span>
+          <span class="stat-value">${fmt(s.balance)}</span>
+        </div>
+        <div class="stat-row total">
+          <span class="stat-label">Total Cost</span>
+          <span class="stat-value">${fmt(s.totalCost)}</span>
+        </div>
+        <div style="font-size:.72rem;color:var(--gray);margin-top:.5rem;">Total cost = closing costs paid + interest over ${holdYrs} yrs</div>
+      </div>
+    `;
+  }
+
+  function attachTables(baseLoan, discountLoan, rate, term, holdYrs) {
+    const renderTable = (rows) => {
+      if (!rows.length) return '<p style="padding:.5rem;color:var(--gray);">No data.</p>';
+      return `<table>
+        <thead><tr>
+          <th>Year</th>
+          <th>Interest Paid</th>
+          <th>Principal Paid</th>
+          <th>Cum. Interest</th>
+          <th>Cum. Principal</th>
+          <th>Balance</th>
+        </tr></thead>
+        <tbody>${rows.map(r=>`<tr>
+          <td>${r.yr}</td>
+          <td>${fmt(r.yearInterest)}</td>
+          <td>${fmt(r.yearPrincipal)}</td>
+          <td>${fmt(r.cumInterest)}</td>
+          <td>${fmt(r.cumPrincipal)}</td>
+          <td>${fmt(r.balance)}</td>
+        </tr>`).join('')}</tbody>
+      </table>`;
+    };
+
+    const attach = (detailsId, tableId, loan) => {
+      const el = document.getElementById(detailsId);
+      if (!el) return;
+      el.addEventListener('toggle', () => {
+        if (el.open && !document.getElementById(tableId)._built) {
+          document.getElementById(tableId).innerHTML = renderTable(annualTable(loan, rate, term, holdYrs));
+          document.getElementById(tableId)._built = true;
+        }
+      }, { once: true });
+    };
+
+    attach('detailsBase', 'tableBase', baseLoan);
+    attach('detailsB',    'tableB',    discountLoan);
+    attach('detailsC',    'tableC',    baseLoan); // seller credit keeps same loan
+  }
+
+  // ── Init ─────────────────────────────────────────────────
+  calculate();
+</script>
+</body>
+</html>

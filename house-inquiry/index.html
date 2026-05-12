@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Find Your Dream Home — Stephen Locke, Ph.D.</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #eef1f5;
+      color: #1a202c;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+      max-width: 680px;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    .card-header {
+      background: linear-gradient(135deg, #0a1f44, #1a3a6b);
+      color: #fff;
+      padding: 2rem 2.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1.6rem;
+    }
+
+    .agent-photo {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      object-fit: cover;
+      object-position: center top;
+      border: 3px solid rgba(255,255,255,0.35);
+      flex-shrink: 0;
+    }
+
+    .agent-info h1 {
+      font-size: 1.45rem;
+      font-weight: 700;
+      margin-bottom: 0.15rem;
+      line-height: 1.2;
+    }
+
+    .agent-info .title {
+      font-size: 0.85rem;
+      opacity: 0.75;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      margin-bottom: 0.5rem;
+    }
+
+    .agent-info .brokerage {
+      font-size: 0.9rem;
+      font-weight: 600;
+      opacity: 0.9;
+      margin-bottom: 0.5rem;
+    }
+
+    .agent-contact {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.3rem 1rem;
+      font-size: 0.8rem;
+      opacity: 0.82;
+    }
+
+    .agent-contact a {
+      color: #fff;
+      text-decoration: none;
+    }
+
+    .agent-contact a:hover {
+      text-decoration: underline;
+    }
+
+    .form-tagline {
+      background: #f0f4f8;
+      border-bottom: 1px solid #e2e8f0;
+      padding: 0.85rem 2.5rem;
+      font-size: 0.95rem;
+      color: #4a5568;
+    }
+
+    @media (max-width: 520px) {
+      .card-header { flex-direction: column; align-items: flex-start; padding: 1.6rem 1.5rem; gap: 1rem; }
+      .form-tagline { padding: 0.75rem 1.5rem; }
+    }
+
+    form {
+      padding: 2.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.4rem;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.2rem;
+    }
+
+    @media (max-width: 520px) {
+      .row { grid-template-columns: 1fr; }
+      form { padding: 1.5rem; }
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    label {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #374151;
+    }
+
+    label span.req {
+      color: #e53e3e;
+      margin-left: 2px;
+    }
+
+    input, select, textarea {
+      border: 1.5px solid #d1d5db;
+      border-radius: 8px;
+      padding: 0.65rem 0.85rem;
+      font-size: 0.95rem;
+      font-family: inherit;
+      color: #1a202c;
+      background: #fafafa;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: #1a3a6b;
+      box-shadow: 0 0 0 3px rgba(26,58,107,0.12);
+      background: #fff;
+    }
+
+    textarea { resize: vertical; min-height: 100px; }
+
+    .checkbox-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem 1rem;
+    }
+
+    .checkbox-group label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 400;
+      cursor: pointer;
+    }
+
+    .checkbox-group input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: #1a3a6b;
+      border: none;
+      padding: 0;
+    }
+
+    .section-label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #6b7280;
+      border-bottom: 1px solid #e5e7eb;
+      padding-bottom: 0.4rem;
+      margin-bottom: -0.4rem;
+    }
+
+    button[type="submit"] {
+      background: linear-gradient(135deg, #0a1f44, #1a3a6b);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.85rem 1.5rem;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+      margin-top: 0.5rem;
+    }
+
+    button[type="submit"]:hover { opacity: 0.92; }
+    button[type="submit"]:active { transform: scale(0.98); }
+
+    .note {
+      font-size: 0.78rem;
+      color: #9ca3af;
+      text-align: center;
+      margin-top: -0.8rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="card-header">
+      <img src="Headshot.jpg" alt="Stephen Locke" class="agent-photo">
+      <div class="agent-info">
+        <h1>Stephen Locke, Ph.D.</h1>
+        <div class="title">REALTOR®</div>
+        <div class="brokerage">Coldwell Banker Legacy Group</div>
+        <div class="agent-contact">
+          <a href="tel:2703313920">270-331-3920</a>
+          <a href="mailto:stephenlewislocke@gmail.com">stephenlewislocke@gmail.com</a>
+          <a href="https://www.kymoves.com" target="_blank">kymoves.com</a>
+        </div>
+      </div>
+    </div>
+    <p class="form-tagline">Tell us what you're looking for and I'll be in touch.</p>
+
+    <form action="https://formspree.io/f/mnjopepr" method="POST">
+
+      <input type="hidden" name="_subject" value="New Home Buyer Inquiry — Stephen Locke">
+      <input type="hidden" name="_replyto" value="stephenlewislocke@gmail.com">
+
+      <p class="section-label">Your Details</p>
+
+      <div class="row">
+        <div class="field">
+          <label for="name">Full Name <span class="req">*</span></label>
+          <input type="text" id="name" name="name" required placeholder="Jane Smith">
+        </div>
+        <div class="field">
+          <label for="email">Email Address <span class="req">*</span></label>
+          <input type="email" id="email" name="email" required placeholder="jane@example.com">
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="phone">Phone Number</label>
+        <input type="tel" id="phone" name="phone" placeholder="+1 (555) 000-0000">
+      </div>
+
+      <p class="section-label">Property Requirements</p>
+
+      <div class="row">
+        <div class="field">
+          <label for="type">Property Type <span class="req">*</span></label>
+          <select id="type" name="property_type" required>
+            <option value="" disabled selected>Select type…</option>
+            <option>Single Family Home</option>
+            <option>Townhouse</option>
+            <option>Condo / Apartment</option>
+            <option>Multi-Family</option>
+            <option>Land / Lot</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="timeline">Buying Timeline <span class="req">*</span></label>
+          <select id="timeline" name="timeline" required>
+            <option value="" disabled selected>Select timeline…</option>
+            <option>As soon as possible</option>
+            <option>1–3 months</option>
+            <option>3–6 months</option>
+            <option>6–12 months</option>
+            <option>Just browsing</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label for="bedrooms_min">Min. Bedrooms <span class="req">*</span></label>
+          <select id="bedrooms_min" name="min_bedrooms" required>
+            <option value="" disabled selected>Select…</option>
+            <option>Studio</option>
+            <option>1</option>
+            <option>2</option>
+            <option>3</option>
+            <option>4</option>
+            <option>5+</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="bedrooms_max">Max. Bedrooms</label>
+          <select id="bedrooms_max" name="max_bedrooms">
+            <option value="" selected>No maximum</option>
+            <option>Studio</option>
+            <option>1</option>
+            <option>2</option>
+            <option>3</option>
+            <option>4</option>
+            <option>5+</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label for="bathrooms_min">Min. Bathrooms <span class="req">*</span></label>
+          <select id="bathrooms_min" name="min_bathrooms" required>
+            <option value="" disabled selected>Select…</option>
+            <option>1</option>
+            <option>1.5</option>
+            <option>2</option>
+            <option>2.5</option>
+            <option>3+</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="bathrooms_max">Max. Bathrooms</label>
+          <select id="bathrooms_max" name="max_bathrooms">
+            <option value="" selected>No maximum</option>
+            <option>1</option>
+            <option>1.5</option>
+            <option>2</option>
+            <option>2.5</option>
+            <option>3+</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label for="sqft_min">Min. Square Footage</label>
+          <input type="number" id="sqft_min" name="min_sqft" placeholder="e.g. 1200" min="0" step="100">
+        </div>
+        <div class="field">
+          <label for="sqft_max">Max. Square Footage</label>
+          <input type="number" id="sqft_max" name="max_sqft" placeholder="e.g. 3000" min="0" step="100">
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label for="budget_min">Min Budget</label>
+          <input type="number" id="budget_min" name="budget_min" placeholder="e.g. 200000" min="0" step="10000">
+        </div>
+        <div class="field">
+          <label for="budget_max">Max Budget <span class="req">*</span></label>
+          <input type="number" id="budget_max" name="budget_max" required placeholder="e.g. 500000" min="0" step="10000">
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="location">Preferred Location / Neighbourhood</label>
+        <input type="text" id="location" name="location" placeholder="e.g. Austin TX, or North Austin near schools">
+      </div>
+
+      <p class="section-label">Must-Have Features</p>
+
+      <div class="field">
+        <div class="checkbox-group">
+          <label><input type="checkbox" name="features" value="Garden / Yard"> Garden / Yard</label>
+          <label><input type="checkbox" name="features" value="Home Office"> Home Office</label>
+          <label><input type="checkbox" name="features" value="Open Plan Kitchen"> Open Plan Kitchen</label>
+          <label><input type="checkbox" name="features" value="Swimming Pool"> Swimming Pool</label>
+          <label><input type="checkbox" name="features" value="Basement"> Basement</label>
+          <label><input type="checkbox" name="features" value="Pet Friendly"> Pet Friendly</label>
+          <label><input type="checkbox" name="features" value="Accessible / Single Storey"> Accessible / Single Storey</label>
+          <label><input type="checkbox" name="features" value="Bonus Room"> Bonus Room</label>
+          <label><input type="checkbox" name="features" value="Fence"> Fence</label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="notes">Anything else we should know?</label>
+        <textarea id="notes" name="notes" placeholder="School catchment area, proximity to transport, style preferences…"></textarea>
+      </div>
+
+      <p class="section-label">Contact Preferences</p>
+
+      <div class="field">
+        <label>Preferred Contact Method <span class="req">*</span></label>
+        <div class="checkbox-group" style="grid-template-columns: 1fr 1fr 1fr;">
+          <label><input type="checkbox" name="contact_method" value="Phone Call"> Phone Call</label>
+          <label><input type="checkbox" name="contact_method" value="Text Message"> Text Message</label>
+          <label><input type="checkbox" name="contact_method" value="Email"> Email</label>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label for="contact_not_before">Do not contact before</label>
+          <select id="contact_not_before" name="contact_not_before">
+            <option value="" selected>No restriction</option>
+            <option>6:00 AM</option>
+            <option>7:00 AM</option>
+            <option>8:00 AM</option>
+            <option>9:00 AM</option>
+            <option>10:00 AM</option>
+            <option>11:00 AM</option>
+            <option>12:00 PM</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="contact_not_after">Do not contact after</label>
+          <select id="contact_not_after" name="contact_not_after">
+            <option value="" selected>No restriction</option>
+            <option>12:00 PM</option>
+            <option>1:00 PM</option>
+            <option>2:00 PM</option>
+            <option>3:00 PM</option>
+            <option>4:00 PM</option>
+            <option>5:00 PM</option>
+            <option>6:00 PM</option>
+            <option>7:00 PM</option>
+            <option>8:00 PM</option>
+            <option>9:00 PM</option>
+          </select>
+        </div>
+      </div>
+
+      <button type="submit">Submit Enquiry</button>
+      <p class="note">Your information is used solely to help match you with the right property. &mdash; Stephen Locke, Ph.D. &bull; Coldwell Banker Legacy Group &bull; 753 Bakerfields Way Suite 102, Bowling Green, KY 42104</p>
+    </form>
+  </div>
+</body>
+</html>
