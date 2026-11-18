@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Loan Comparison</title>
+<style>
+  :root {
+    --bg: #f6f7f9;
+    --card: #ffffff;
+    --ink: #1d2433;
+    --muted: #667085;
+    --line: #e4e7ec;
+    --accent: #2f5bd3;
+    --accent-soft: #eaf0ff;
+    --good: #1a7f4b;
+    --good-soft: #e7f6ee;
+    --bad: #b42318;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.4;
+  }
+  header {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 32px 20px 8px;
+  }
+  h1 { margin: 0 0 4px; font-size: 1.6rem; }
+  header p { margin: 0; color: var(--muted); }
+  main { max-width: 1200px; margin: 0 auto; padding: 16px 20px 48px; }
+
+  .toolbar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+  button {
+    font: inherit;
+    border: 1px solid var(--line);
+    background: var(--card);
+    color: var(--ink);
+    border-radius: 8px;
+    padding: 8px 14px;
+    cursor: pointer;
+  }
+  button:hover { border-color: #c5cbd6; }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  button.primary:hover { background: #2549ad; }
+  button.icon { padding: 4px 8px; font-size: 0.9rem; color: var(--muted); }
+  button.icon:hover { color: var(--bad); border-color: var(--bad); }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .card.best { border-color: var(--good); box-shadow: 0 0 0 2px var(--good-soft); }
+  .card-head { display: flex; align-items: center; gap: 8px; }
+  .card-head input {
+    flex: 1;
+    font-weight: 600;
+    font-size: 1rem;
+    border: 1px solid transparent;
+    padding: 4px 6px;
+    margin-left: -6px;
+  }
+  .card-head input:hover, .card-head input:focus { border-color: var(--line); }
+  .badge {
+    align-self: flex-start;
+    margin-top: -4px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    background: var(--good-soft);
+    color: var(--good);
+    padding: 2px 8px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+  label { display: flex; flex-direction: column; gap: 4px; font-size: 0.82rem; color: var(--muted); }
+  .field { position: relative; }
+  .field .prefix, .field .suffix {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    color: var(--muted); font-size: 0.9rem; pointer-events: none;
+  }
+  .field .prefix { left: 10px; }
+  .field .suffix { right: 10px; }
+  input {
+    font: inherit;
+    color: var(--ink);
+    width: 100%;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 8px 10px;
+    background: #fff;
+  }
+  .field.has-prefix input { padding-left: 22px; }
+  .field.has-suffix input { padding-right: 44px; }
+  input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  input.invalid { border-color: var(--bad); }
+
+  .results {
+    border-top: 1px solid var(--line);
+    padding-top: 10px;
+    margin-top: 4px;
+    display: grid;
+    gap: 6px;
+  }
+  .row { display: flex; justify-content: space-between; gap: 12px; font-size: 0.9rem; }
+  .row span:first-child { color: var(--muted); }
+  .row.big span:last-child { font-size: 1.35rem; font-weight: 700; }
+  .row.big span:first-child { align-self: flex-end; }
+  .err { color: var(--bad); font-size: 0.85rem; }
+  .row.strong span:last-child { font-weight: 700; }
+  label.check { flex-direction: row; align-items: flex-start; gap: 8px; font-size: 0.8rem; cursor: pointer; }
+  label.check input { width: auto; margin: 2px 0 0; accent-color: var(--accent); }
+
+  h2 { font-size: 1.1rem; margin: 32px 0 10px; }
+  .table-wrap { overflow-x: auto; background: var(--card); border: 1px solid var(--line); border-radius: 12px; }
+  table { border-collapse: collapse; width: 100%; font-size: 0.9rem; }
+  th, td { padding: 10px 14px; text-align: right; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  th:first-child, td:first-child { text-align: left; }
+  thead th { background: #fafbfc; color: var(--muted); font-weight: 600; }
+  tbody tr:last-child td { border-bottom: none; }
+  td.low { color: var(--good); font-weight: 600; }
+  .note { color: var(--muted); font-size: 0.8rem; margin-top: 10px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Loan Comparison</h1>
+  <p>Enter each option's price, down payment, term, interest rate and any finance charges to compare monthly payments, total interest and total finance cost.</p>
+</header>
+
+<main>
+  <div class="toolbar">
+    <button class="primary" id="addBtn">+ Add loan option</button>
+    <button id="dupBtn">Duplicate last option</button>
+    <button id="resetBtn">Reset</button>
+  </div>
+
+  <div class="grid" id="cards"></div>
+
+  <h2>Side-by-side comparison</h2>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Option</th>
+          <th>Price</th>
+          <th>Down payment</th>
+          <th>Loan amount</th>
+          <th>Term</th>
+          <th>Rate (APR)</th>
+          <th>Monthly payment</th>
+          <th>Total interest</th>
+          <th>Finance charges</th>
+          <th>Total finance cost</th>
+          <th>Effective APR</th>
+          <th>Total cost</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+  </div>
+  <p class="note">
+    Payments assume a fixed-rate, fully amortizing loan with monthly compounding. Finance charges rolled into the loan are added to the loan amount and accrue interest;
+    charges paid up front are due at signing. Total finance cost = interest + finance charges. Effective APR is the rate that accounts for the finance charges,
+    similar to the APR on a lender's disclosure. Total cost = down payment + up-front charges + all monthly payments.
+    Figures exclude taxes, title, registration and other fees unless you include them in the price. Lowest values in each column are highlighted in green.
+  </p>
+</main>
+
+<script>
+(function () {
+  const defaults = [
+    { name: "Option A", price: 35000, down: 5000, term: 60, rate: 6.9, fees: 0, financeFees: true },
+    { name: "Option B", price: 35000, down: 5000, term: 72, rate: 7.4, fees: 395, financeFees: true },
+    { name: "Option C", price: 35000, down: 10000, term: 48, rate: 5.9, fees: 600, financeFees: false }
+  ];
+
+  let loans = [];
+  let nextId = 1;
+
+  const cardsEl = document.getElementById("cards");
+  const tableBody = document.getElementById("tableBody");
+
+  const money = (n) => n.toLocaleString("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const money0 = (n) => n.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
+
+  function letterName(i) {
+    let s = "";
+    i += 1;
+    while (i > 0) { const m = (i - 1) % 26; s = String.fromCharCode(65 + m) + s; i = Math.floor((i - 1) / 26); }
+    return "Option " + s;
+  }
+
+  function calc(l) {
+    const price = parseFloat(l.price), down = parseFloat(l.down) || 0;
+    const term = parseInt(l.term, 10), rate = parseFloat(l.rate);
+    if (!(price > 0)) return { error: "Enter a price above $0." };
+    if (down < 0) return { error: "Down payment can't be negative." };
+    if (down > price) return { error: "Down payment is larger than the price." };
+    if (!(term > 0)) return { error: "Enter a term of at least 1 month." };
+    if (!(rate >= 0)) return { error: "Enter an interest rate of 0% or more." };
+    const fees = parseFloat(l.fees) || 0;
+    if (fees < 0) return { error: "Finance charges can't be negative." };
+    const financed = !!l.financeFees;
+    const borrowed = price - down;                    // cash actually needed for the vehicle
+    const principal = borrowed + (financed ? fees : 0); // loan amount
+    const r = rate / 100 / 12;
+    const payment = annuityPayment(principal, r, term);
+    const totalPaid = payment * term;
+    const interest = totalPaid - principal;
+    const upfrontFees = financed ? 0 : fees;
+    const financeCharge = interest + fees;            // interest + all finance charges
+    // Effective APR: the rate at which the payments repay only the money actually received
+    // (the borrowed amount, net of any charges paid up front).
+    const netReceived = borrowed - upfrontFees;
+    const effApr = (fees > 0 && netReceived > 0 && payment > 0) ? solveApr(payment, term, netReceived) : rate;
+
+    return {
+      principal, payment, interest, totalPaid, fees, financed, financeCharge, effApr,
+      upfront: down + upfrontFees,
+      totalCost: totalPaid + down + upfrontFees,
+      term, rate, price, down
+    };
+  }
+
+  function annuityPayment(P, r, n) {
+    if (P <= 0) return 0;
+    return r === 0 ? P / n : P * r / (1 - Math.pow(1 + r, -n));
+  }
+
+  function solveApr(payment, n, pv) {
+    // bisection on the monthly rate so that the PV of payments equals pv
+    const pvAt = (r) => r === 0 ? payment * n : payment * (1 - Math.pow(1 + r, -n)) / r;
+    if (pvAt(0) <= pv) return 0;
+    let lo = 0, hi = 1;
+    for (let i = 0; i < 200; i++) {
+      const mid = (lo + hi) / 2;
+      if (pvAt(mid) > pv) lo = mid; else hi = mid;
+    }
+    return ((lo + hi) / 2) * 12 * 100;
+  }
+
+  function addLoan(data) {
+    const l = Object.assign({ id: nextId++ }, data || { name: letterName(loans.length), price: "", down: "", term: 60, rate: "", fees: "", financeFees: true });
+    loans.push(l);
+    render();
+  }
+
+  function removeLoan(id) {
+    loans = loans.filter(l => l.id !== id);
+    render();
+  }
+
+  function field(label, key, l, opts) {
+    const wrap = document.createElement("label");
+    wrap.textContent = label;
+    const f = document.createElement("div");
+    f.className = "field" + (opts.prefix ? " has-prefix" : "") + (opts.suffix ? " has-suffix" : "");
+    if (opts.prefix) { const p = document.createElement("span"); p.className = "prefix"; p.textContent = opts.prefix; f.appendChild(p); }
+    const inp = document.createElement("input");
+    inp.type = "number";
+    inp.inputMode = "decimal";
+    inp.min = "0";
+    inp.step = opts.step || "any";
+    inp.value = l[key];
+    inp.placeholder = opts.placeholder || "";
+    inp.addEventListener("input", () => { l[key] = inp.value; update(); });
+    f.appendChild(inp);
+    if (opts.suffix) { const s = document.createElement("span"); s.className = "suffix"; s.textContent = opts.suffix; f.appendChild(s); }
+    wrap.appendChild(f);
+    return wrap;
+  }
+
+  function render() {
+    cardsEl.innerHTML = "";
+    loans.forEach(l => {
+      const card = document.createElement("div");
+      card.className = "card";
+      card.dataset.id = l.id;
+
+      const head = document.createElement("div");
+      head.className = "card-head";
+      const name = document.createElement("input");
+      name.value = l.name;
+      name.setAttribute("aria-label", "Option name");
+      name.addEventListener("input", () => { l.name = name.value; update(); });
+      head.appendChild(name);
+      const badge = document.createElement("span");
+      badge.className = "badge";
+      badge.textContent = "Lowest finance cost";
+      badge.hidden = true;
+      const del = document.createElement("button");
+      del.className = "icon";
+      del.title = "Remove this option";
+      del.textContent = "✕";
+      del.addEventListener("click", () => removeLoan(l.id));
+      head.appendChild(del);
+      card.appendChild(head);
+      card.appendChild(badge);
+
+      card.appendChild(field("Price", "price", l, { prefix: "$", placeholder: "35000" }));
+      card.appendChild(field("Down payment", "down", l, { prefix: "$", placeholder: "5000" }));
+      card.appendChild(field("Term", "term", l, { suffix: "months", step: "1", placeholder: "60" }));
+      card.appendChild(field("Interest rate (APR)", "rate", l, { suffix: "%", placeholder: "6.9" }));
+      card.appendChild(field("Finance charges (loan origination, acquisition, etc.)", "fees", l, { prefix: "$", placeholder: "0" }));
+
+      const tog = document.createElement("label");
+      tog.className = "check";
+      const cb = document.createElement("input");
+      cb.type = "checkbox";
+      cb.checked = !!l.financeFees;
+      cb.addEventListener("change", () => { l.financeFees = cb.checked; update(); });
+      tog.appendChild(cb);
+      tog.appendChild(document.createTextNode(" Roll finance charges into the loan (uncheck if paid up front)"));
+      card.appendChild(tog);
+
+      const res = document.createElement("div");
+      res.className = "results";
+      card.appendChild(res);
+
+      cardsEl.appendChild(card);
+    });
+    update();
+  }
+
+  function update() {
+    const results = loans.map(l => ({ l, c: calc(l) }));
+    const valid = results.filter(x => !x.c.error);
+    const minOf = (k) => valid.length > 1 ? Math.min(...valid.map(x => x.c[k])) : null;
+    const minPay = minOf("payment"), minInt = minOf("interest"), minFin = minOf("financeCharge"), minApr = minOf("effApr"), minCost = minOf("totalCost");
+
+    results.forEach(({ l, c }) => {
+      const card = cardsEl.querySelector('[data-id="' + l.id + '"]');
+      if (!card) return;
+      const res = card.querySelector(".results");
+      const badge = card.querySelector(".badge");
+      if (c.error) {
+        res.innerHTML = '<div class="err"></div>';
+        res.firstChild.textContent = c.error;
+        card.classList.remove("best");
+        badge.hidden = true;
+        return;
+      }
+      const isBest = minFin !== null && Math.abs(c.financeCharge - minFin) < 0.005;
+      card.classList.toggle("best", isBest);
+      badge.hidden = !isBest;
+      res.innerHTML =
+        '<div class="row big"><span>Monthly payment</span><span>' + money(c.payment) + '</span></div>' +
+        '<div class="row"><span>Loan amount</span><span>' + money(c.principal) + '</span></div>' +
+        '<div class="row"><span>Total interest</span><span>' + money(c.interest) + '</span></div>' +
+        '<div class="row"><span>Finance charges' + (c.fees > 0 ? (c.financed ? ' (financed)' : ' (up front)') : '') + '</span><span>' + money(c.fees) + '</span></div>' +
+        '<div class="row strong"><span>Total finance cost</span><span>' + money(c.financeCharge) + '</span></div>' +
+        '<div class="row"><span>Effective APR</span><span>' + c.effApr.toFixed(2) + '%</span></div>' +
+        '<div class="row"><span>Due at signing</span><span>' + money(c.upfront) + '</span></div>' +
+        '<div class="row"><span>Total of payments</span><span>' + money(c.totalPaid) + '</span></div>' +
+        '<div class="row"><span>Total cost (incl. down)</span><span>' + money(c.totalCost) + '</span></div>';
+    });
+
+    tableBody.innerHTML = "";
+    if (!results.length) {
+      tableBody.innerHTML = '<tr><td colspan="12" style="text-align:center;color:var(--muted)">Add a loan option to get started.</td></tr>';
+      return;
+    }
+    results.forEach(({ l, c }) => {
+      const tr = document.createElement("tr");
+      const nameTd = document.createElement("td");
+      nameTd.textContent = l.name || "(unnamed)";
+      tr.appendChild(nameTd);
+      if (c.error) {
+        const td = document.createElement("td");
+        td.colSpan = 11;
+        td.style.textAlign = "left";
+        td.className = "err";
+        td.textContent = c.error;
+        tr.appendChild(td);
+      } else {
+        const cells = [
+          [money0(c.price)], [money0(c.down)], [money0(c.principal)],
+          [c.term + " mo"], [c.rate.toFixed(2) + "%"],
+          [money(c.payment), minPay !== null && Math.abs(c.payment - minPay) < 0.005],
+          [money(c.interest), minInt !== null && Math.abs(c.interest - minInt) < 0.005],
+          [money(c.fees) + (c.fees > 0 ? (c.financed ? " (fin.)" : " (upfront)") : "")],
+          [money(c.financeCharge), minFin !== null && Math.abs(c.financeCharge - minFin) < 0.005],
+          [c.effApr.toFixed(2) + "%", minApr !== null && Math.abs(c.effApr - minApr) < 0.0005],
+          [money(c.totalCost), minCost !== null && Math.abs(c.totalCost - minCost) < 0.005]
+        ];
+        cells.forEach(([txt, low]) => {
+          const td = document.createElement("td");
+          td.textContent = txt;
+          if (low) td.className = "low";
+          tr.appendChild(td);
+        });
+      }
+      tableBody.appendChild(tr);
+    });
+  }
+
+  document.getElementById("addBtn").addEventListener("click", () => addLoan());
+  document.getElementById("dupBtn").addEventListener("click", () => {
+    const last = loans[loans.length - 1];
+    if (!last) { addLoan(); return; }
+    addLoan({ name: letterName(loans.length), price: last.price, down: last.down, term: last.term, rate: last.rate, fees: last.fees, financeFees: last.financeFees });
+  });
+  document.getElementById("resetBtn").addEventListener("click", () => {
+    loans = []; nextId = 1;
+    defaults.forEach(d => addLoan(Object.assign({}, d)));
+  });
+
+  defaults.forEach(d => addLoan(Object.assign({}, d)));
+})();
+</script>
+</body>
+</html>
